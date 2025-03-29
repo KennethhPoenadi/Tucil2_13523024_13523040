@@ -1,50 +1,44 @@
-#include <iostream>
-#include <string>
 #include "include/image.hpp"
+#include "include/quadtree.hpp"
+#include <iostream>
 
 using namespace std;
 
-int main() {
-    string imagePath;
+void printQuadTree(QuadTree* node, int depth = 0) {
+    if (!node) return;
     
-    cout << "Masukkan path gambar: ";
-    getline(cin, imagePath);
+    for (int i = 0; i < depth; ++i) cout << "  ";
+    cout << "Node at (" << node->getX() << ", " << node->getY() << ") - Size: "
+         << node->getSizeX() << "x" << node->getSizeY() << "\n";
+    
+    printQuadTree(node->getGambarKiriAtas(), depth + 1);
+    printQuadTree(node->getGambarKananAtas(), depth + 1);
+    printQuadTree(node->getGambarKiriBawah(), depth + 1);
+    printQuadTree(node->getGambarKananBawah(), depth + 1);
+}
 
-    try {
-        Image img = loadImage(imagePath);
-        
-        cout << "Gambar berhasil dimuat:" << endl;
-        cout << "Width: " << img.width << endl;
-        cout << "Height: " << img.height << endl;
-        cout << "Channels: " << img.channels << endl;
-        
-        // Menampilkan beberapa pixel pertama sebagai contoh
-        int maxRows = min(5, img.height); // Maksimal 5 baris biar ga kepenuhan
-        int maxCols = min(10, img.width); // Maksimal 10 kolom
+int main() {
+    string filename;
+    cout << "Masukkan nama file gambar: ";
+    getline(cin, filename);
 
-        cout << "\nPixel Data (R, G, B, A jika ada):\n";
-        for (int y = 0; y < maxRows; y++) {
-            for (int x = 0; x < maxCols; x++) {
-                Pixel p = img.pixels[y][x];
-                cout << "(" << static_cast<int>(p.r) << ", "
-                     << static_cast<int>(p.g) << ", "
-                     << static_cast<int>(p.b);
-                
-                if (img.channels == 4) { // Kalau ada Alpha channel
-                    cout << ", " << static_cast<int>(p.a);
-                }
-                
-                cout << ") ";
-            }
-            cout << endl;
-        }
-
-        cout << "\n... (Dibatasi untuk tampilan lebih rapi)" << endl;
-    }
-    catch (const exception& e) {
-        cerr << "Error: " << e.what() << endl;
+    if (!checkFile(filename)) {
+        cerr << "Error: File tidak ditemukan!" << endl;
         return 1;
     }
 
+    Image img = loadImage(filename);
+    if (img.width == 0 || img.height == 0) {
+        cerr << "Error: Gagal memuat gambar!" << endl;
+        return 1;
+    }
+
+    cout << "Dimensi Gambar: " << img.width << " x " << img.height << "\n";
+    
+    QuadTree* root = buildQuadTree(img.pixels, 0, 0, img.width, img.height);
+    
+    cout << "\nStruktur Quadtree:\n";
+    printQuadTree(root);
+    
     return 0;
 }

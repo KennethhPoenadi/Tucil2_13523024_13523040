@@ -1,33 +1,34 @@
 #ifndef QUADTREE_HPP
 #define QUADTREE_HPP
 
-#include <vector>
 #include "image.hpp"
+#include <vector>
 
 using namespace std;
 
-struct QuadtreeNode {
-    int x, y, size; //koordinat & ukuran blok
-    Pixel avgColor; //warna rata-rata blok
-    bool isLeaf; //true kalau ini leaf node
+class QuadTree {
+    private:
+        vector<vector<Pixel>> matrix;
+        int x, y, sizeX, sizeY;
+        QuadTree *GambarKiriAtas, *GambarKananAtas, *GambarKiriBawah, *GambarKananBawah;
 
-    QuadtreeNode* children[4]; //empat sub-blok
-
-    QuadtreeNode(int x, int y, int size, Pixel color);
-    ~QuadtreeNode(); //destructor buat free memori
+    public:
+        QuadTree(const vector<vector<Pixel>>& mat, int x, int y, int sizeX, int sizeY);
+        vector<vector<Pixel>> getMatrix() const;
+        int getX() const;
+        int getY() const;
+        int getSizeX() const;
+        int getSizeY() const;
+        QuadTree* getGambarKiriAtas() const;
+        QuadTree* getGambarKananAtas() const;
+        QuadTree* getGambarKiriBawah() const;
+        QuadTree* getGambarKananBawah() const;
+        void setGambarKiriAtas(QuadTree* node);
+        void setGambarKananAtas(QuadTree* node);
+        void setGambarKiriBawah(QuadTree* node);
+        void setGambarKananBawah(QuadTree* node);
 };
 
-class Quadtree {
-public:
-    QuadtreeNode* root;
-    int threshold; //ambang batas error
-
-    Quadtree(int threshold);
-    ~Quadtree();
-
-    void build(const Image& img);
-    void compress(QuadtreeNode* node, const Image& img);
-    void reconstruct(Image& img);
-};
+QuadTree* buildQuadTree(const vector<vector<Pixel>>& mat, int x, int y, int sizeX, int sizeY);
 
 #endif
