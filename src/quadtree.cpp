@@ -1,5 +1,8 @@
 #include "include/quadtree.hpp"
 
+#include <iostream>
+using namespace std;
+
 QuadTree::QuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY)
     : matrix(mat), x(x), y(y), sizeX(sizeX), sizeY(sizeY),
       minBlockSizeX(minX), minBlockSizeY(minY),
@@ -65,9 +68,29 @@ void QuadTree::setGambarKananBawah(QuadTree* node) {
     GambarKananBawah = node;
 }
 
-QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY) {
-    //berentiin pembagian klo ukuran blok ud kurang ato sama kek ukuran minimum blok
-    if (sizeX <= minX || sizeY <= minY) {
+QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY, double threshold, bool useVariance, bool useMPD, bool useMAD, bool useEntropy) 
+{
+    double error = 0.0;
+    
+    if (useVariance) {
+        error = calculateRGBVariance(mat, x, y, sizeX, sizeY);
+        cout << error;
+    } else if (useMPD) {
+        error = calculateMPD(mat, x, y, sizeX, sizeY);
+        cout << error;
+
+    } else if (useMAD) {
+        error = calculateRGBMad(mat, x, y, sizeX, sizeY);
+        cout << error;
+
+    } else if (useEntropy) {
+        error = calculateRGBEntropyTotal(mat, x, y, sizeX, sizeY); 
+        cout << error;
+
+    }
+    
+    //berentikan pembagian jika ukuran blok sudah mencapai minimum atau error kurang dari atau sama dengan threshold
+    if (sizeX <= minX || sizeY <= minY || error < threshold) {
         return new QuadTree(mat, x, y, sizeX, sizeY, minX, minY);
     }
     
@@ -77,10 +100,10 @@ QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int size
     int sizeY1 = midY, sizeY2 = sizeY - midY;
     
     QuadTree* node = new QuadTree(mat, x, y, sizeX, sizeY, minX, minY);
-    node->setGambarKiriAtas(buildQuadTree(mat, x, y, sizeX1, sizeY1, minX, minY));
-    node->setGambarKananAtas(buildQuadTree(mat, x + sizeX1, y, sizeX2, sizeY1, minX, minY));
-    node->setGambarKiriBawah(buildQuadTree(mat, x, y + sizeY1, sizeX1, sizeY2, minX, minY));
-    node->setGambarKananBawah(buildQuadTree(mat, x + sizeX1, y + sizeY1, sizeX2, sizeY2, minX, minY));
+    node->setGambarKiriAtas(buildQuadTree(mat, x, y, sizeX1, sizeY1, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy));
+    node->setGambarKananAtas(buildQuadTree(mat, x + sizeX1, y, sizeX2, sizeY1, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy));
+    node->setGambarKiriBawah(buildQuadTree(mat, x, y + sizeY1, sizeX1, sizeY2, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy));
+    node->setGambarKananBawah(buildQuadTree(mat, x + sizeX1, y + sizeY1, sizeX2, sizeY2, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy));
     
     return node;
 }

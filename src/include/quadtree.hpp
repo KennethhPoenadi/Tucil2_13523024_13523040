@@ -2,7 +2,7 @@
 #define QUADTREE_HPP
 
 #include "image.hpp"
-#include <vector>
+#include "utils.hpp"
 
 using namespace std;
 
@@ -32,6 +32,6 @@ class QuadTree {
         void setGambarKananBawah(QuadTree* node);
 };
 
-QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY);
+QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY, double threshold, bool useVariance, bool useMPD, bool useMAD, bool useEntropy);
 
 #endif
