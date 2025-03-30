@@ -58,6 +58,39 @@ double calculateRGBVariance(const vector<vector<Pixel>>* matrix, int x, int y, i
 
 /* MAD */
 
+double calculateMad(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY, int colorChannel) {//berdasarkan color channel yg di mau
+    double mean = calculateMean(matrix, x, y, sizeX, sizeY, colorChannel);
+    
+    double sum = 0.0;
+    int count = 0;
+    
+    for (int j = y; j < y + sizeY && j < static_cast<int>(matrix->size()); j++) {
+        for (int i = x; i < x + sizeX && i < static_cast<int>((*matrix)[j].size()); i++) {
+            double pixelValue;
+            if (colorChannel == 0) // Red
+                pixelValue = (*matrix)[j][i].r;
+            else if (colorChannel == 1) // Green
+                pixelValue = (*matrix)[j][i].g;
+            else // Blue
+                pixelValue = (*matrix)[j][i].b;
+            
+            sum += (pixelValue - mean);
+            if (sum <= 0) {
+                sum *= -1;
+            }
+            count++;
+        }
+    }
+    
+    return (count > 0) ? (sum / count) : 0.0;
+}
 
+double calculateRGBMad(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY) {//total
+    double MadR = calculateMad(matrix, x, y, sizeX, sizeY, 0);
+    double MadG = calculateMad(matrix, x, y, sizeX, sizeY, 1);
+    double MadB = calculateMad(matrix, x, y, sizeX, sizeY, 2);
+    
+    return (MadR + MadG + MadB) / 3.0;
+}
 
 /* MAD */

@@ -36,13 +36,13 @@ int main() {
     // Hitung mean dan variansi untuk tiap kanal warna
     for (int ch = 0; ch < 3; ch++) {
         double mean = calculateMean(&img.pixels, x, y, regionWidth, regionHeight, ch);
-        double var  = calculateVariance(&img.pixels, x, y, regionWidth, regionHeight, ch);
+        double var  = calculateMad(&img.pixels, x, y, regionWidth, regionHeight, ch);
         string channel = (ch == 0) ? "Red" : (ch == 1) ? "Green" : "Blue";
-        cout << "Channel " << channel << " - Mean: " << mean << ", Variance: " << var << "\n";
+        cout << "Channel " << channel << " - Mean: " << mean << ", Mad: " << var << "\n";
     }
     
-    double rgbVar = calculateRGBVariance(&img.pixels, x, y, regionWidth, regionHeight);
-    cout << "Rata-rata RGB Variance: " << rgbVar << "\n";
+    double rgbMad = calculateRGBMad(&img.pixels, x, y, regionWidth, regionHeight);
+    cout << "Rata-rata RGB Mad: " << rgbMad << "\n";
     
     return 0;
 }
