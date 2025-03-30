@@ -1,9 +1,26 @@
 #include "include/image.hpp"
+#include "include/quadtree.hpp"
 #include "include/utils.hpp"
 #include <iostream>
 #include <string>
 
 using namespace std;
+
+/* masi testing ya wkwk */
+
+void printQuadTree(QuadTree* node, int depth = 0) {
+    if (!node) return;
+    
+    for (int i = 0; i < depth; ++i)
+        cout << "  ";
+    cout << "Node at (" << node->getX() << ", " << node->getY() << ") - Size: "
+         << node->getSizeX() << "x" << node->getSizeY() << "\n";
+    
+    printQuadTree(node->getGambarKiriAtas(), depth + 1);
+    printQuadTree(node->getGambarKananAtas(), depth + 1);
+    printQuadTree(node->getGambarKiriBawah(), depth + 1);
+    printQuadTree(node->getGambarKananBawah(), depth + 1);
+}
 
 int main() {
     string filename;
@@ -23,42 +40,41 @@ int main() {
     
     cout << "Dimensi Gambar: " << img.width << " x " << img.height << "\n";
     
-    int x, y, regionWidth, regionHeight;
-    cout << "Masukkan koordinat x region: ";
-    cin >> x;
-    cout << "Masukkan koordinat y region: ";
-    cin >> y;
-    cout << "Masukkan lebar region: ";
-    cin >> regionWidth;
-    cout << "Masukkan tinggi region: ";
-    cin >> regionHeight;
+    int minX, minY;
+    cout << "Masukkan minimum block size X: ";
+    cin >> minX;
+    cout << "Masukkan minimum block size Y: ";
+    cin >> minY;
     
-    // Validasi region
-    if (x < 0 || y < 0 || x + regionWidth > img.width || y + regionHeight > img.height) {
-        cerr << "Error: Region yang dipilih berada di luar dimensi gambar!" << endl;
-        return 1;
+    double threshold;
+    cout << "Masukkan threshold error: ";
+    cin >> threshold;
+    
+    int methodInput;
+    cout << "Pilih metode error:\n";
+    cout << "0: Variance\n1: MPD\n2: MAD\n3: Entropy\n";
+    cout << "Pilihan: ";
+    cin >> methodInput;
+    
+    // Set parameter boolean sesuai pilihan (asumsikan hanya satu yang true)
+    bool useVariance = false, useMPD = false, useMAD = false, useEntropy = false;
+    switch (methodInput) {
+        case 0: useVariance = true; break;
+        case 1: useMPD = true; break;
+        case 2: useMAD = true; break;
+        case 3: useEntropy = true; break;
+        default:
+            cout << "Input tidak valid. Default ke Variance.\n";
+            useVariance = true;
+            break;
     }
     
-    // Hitung entropy untuk tiap kanal warna
-    for (int ch = 0; ch < 3; ch++) {
-        double entropy = calculateEntropy(&img.pixels, x, y, regionWidth, regionHeight, ch);
-        string channel = (ch == 0) ? "Red" : (ch == 1) ? "Green" : "Blue";
-        cout << "Channel " << channel << " - Entropy: " << entropy << "\n";
-    }
+    // Pastikan untuk mengirim alamat dari matriks piksel
+    const vector<vector<Pixel>>* pixelMatrix = &img.pixels;
+    QuadTree* root = buildQuadTree(pixelMatrix, 0, 0, img.width, img.height, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy);
     
-    double rgbEntropy = calculateRGBEntropyTotal(&img.pixels, x, y, regionWidth, regionHeight);
-    cout << "Rata-rata RGB Entropy: " << rgbEntropy << "\n";
-    
-    // Untuk perbandingan, tampilkan juga hasil dari metode lain
-    double rgbVariance = calculateRGBVariance(&img.pixels, x, y, regionWidth, regionHeight);
-    double rgbMad = calculateRGBMad(&img.pixels, x, y, regionWidth, regionHeight);
-    double rgbMaxDiff = calculateMPD(&img.pixels, x, y, regionWidth, regionHeight);
-    
-    cout << "\nPerbandingan metode pengukuran error:\n";
-    cout << "Variance: " << rgbVariance << "\n";
-    cout << "MAD: " << rgbMad << "\n";
-    cout << "Max Pixel Difference: " << rgbMaxDiff << "\n";
-    cout << "Entropy: " << rgbEntropy << "\n";
+    cout << "\nStruktur Quadtree:\n";
+    printQuadTree(root);
     
     return 0;
 }
