@@ -8,7 +8,7 @@
 using namespace std;
 
 struct Pixel {
-    unsigned char r, g, b, a;
+    unsigned char r, g, b;
 };
 
 struct Image {
@@ -19,5 +19,6 @@ struct Image {
 };
 
 Image loadImage(const string& filename);
+bool checkFile(const string& filename);
 
 #endif

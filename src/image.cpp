@@ -1,46 +1,39 @@
 #include "include/image.hpp"
+#include <iostream>
 #define STB_IMAGE_IMPLEMENTATION
 #include "include/stb_image.h"
-#include <stdexcept>
 
 using namespace std;
 
 Image loadImage(const string& filename) {
-    int width, height, channels;
-    unsigned char* data = stbi_load(filename.c_str(), &width, &height, &channels, 0);
+    Image img;
+    unsigned char* data = stbi_load(filename.c_str(), &img.width, &img.height, &img.channels, 3);
     
     if (!data) {
-        throw runtime_error("Could not load image: " + filename);
+        cerr << "Error: Tidak dapat memuat gambar " << filename << endl;
+        img.width = img.height = img.channels = 0;
+        return img;
     }
-
-    //membuat struktur image
-    Image img;
-    img.width = width;
-    img.height = height;
-    img.channels = channels;
     
-    img.pixels.resize(height, vector<Pixel>(width));
+    img.channels = 3;
+    img.pixels.resize(img.height, vector<Pixel>(img.width));
     
-    //konversi data mentah menjadi array 2d pixel
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            int index = (y * width + x) * channels;
-            
-            img.pixels[y][x].r = data[index];
-            img.pixels[y][x].g = data[index + 1];
-            img.pixels[y][x].b = data[index + 2];
-            
-            //tambahkan alpha channel jika ada
-            if (channels == 4) {
-                img.pixels[y][x].a = data[index + 3];
-            } else {
-                img.pixels[y][x].a = 255; //default full opacity
-            }
+    for (int y = 0; y < img.height; ++y) {
+        for (int x = 0; x < img.width; ++x) {
+            int index = (y * img.width + x) * img.channels;
+            img.pixels[y][x] = { data[index], data[index+1], data[index+2] };
         }
     }
     
-    //bebaskan memori dari stb_image
     stbi_image_free(data);
-    
     return img;
+}
+
+bool checkFile(const string& filename) {
+    FILE* file = fopen(filename.c_str(), "rb");
+    if (file) {
+        fclose(file);
+        return true;
+    }
+    return false;
 }
