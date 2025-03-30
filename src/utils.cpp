@@ -136,4 +136,46 @@ double calculateMPD(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX
 
 /* Entropy */
 
+
+double calculateEntropy(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY, int colorChannel) {
+    //pertama, bikin dl histogram isinya pixel value yang possible
+    vector<int> histogram(256, 0);
+    int totalPixels = 0;
+    
+    for (int j = y; j < y + sizeY && j < static_cast<int>(matrix->size()); j++) {
+        for (int i = x; i < x + sizeX && i < static_cast<int>((*matrix)[j].size()); i++) {
+            int pixelValue;
+            if (colorChannel == 0) // Red
+                pixelValue = (*matrix)[j][i].r;
+            else if (colorChannel == 1) // Green
+                pixelValue = (*matrix)[j][i].g;
+            else // Blue
+                pixelValue = (*matrix)[j][i].b;
+            
+            histogram[pixelValue]++;
+            totalPixels++;
+        }
+    }
+    
+    // H = -sum(p(i) * log2(p(i)))
+    double entropy = 0.0;
+    
+    for (int i = 0; i < 256; i++) {
+        if (histogram[i] > 0) {
+            double probability = static_cast<double>(histogram[i]) / totalPixels;
+            entropy -= probability * log2(probability);
+        }
+    }
+    
+    return entropy;
+}
+
+double calculateRGBEntropyTotal(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY) {
+    double entropyR = calculateEntropy(matrix, x, y, sizeX, sizeY, 0);
+    double entropyG = calculateEntropy(matrix, x, y, sizeX, sizeY, 1);
+    double entropyB = calculateEntropy(matrix, x, y, sizeX, sizeY, 2);
+    
+    return (entropyR + entropyG + entropyB) / 3.0;
+}
+
 /* Entropy */
