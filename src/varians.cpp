@@ -75,7 +75,7 @@ double calculateMad(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX
                 pixelValue = (*matrix)[j][i].b;
             
             sum += (pixelValue - mean);
-            if (sum <= 0) {
+            if (sum < 0) {
                 sum *= -1;
             }
             count++;
