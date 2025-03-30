@@ -1,23 +1,9 @@
 #include "include/image.hpp"
-#include "include/quadtree.hpp"
+#include "include/varians.hpp"
 #include <iostream>
 #include <string>
 
 using namespace std;
-
-void printQuadTree(QuadTree* node, int depth = 0) {
-    if (!node) return;
-    
-    for (int i = 0; i < depth; ++i)
-        cout << "  ";
-    cout << "Node at (" << node->getX() << ", " << node->getY() << ") - Size: "
-        << node->getSizeX() << "x" << node->getSizeY() << "\n";
-    
-    printQuadTree(node->getGambarKiriAtas(), depth + 1);
-    printQuadTree(node->getGambarKananAtas(), depth + 1);
-    printQuadTree(node->getGambarKiriBawah(), depth + 1);
-    printQuadTree(node->getGambarKananBawah(), depth + 1);
-}
 
 int main() {
     string filename;
@@ -37,19 +23,26 @@ int main() {
     
     cout << "Dimensi Gambar: " << img.width << " x " << img.height << "\n";
     
-    int minX, minY;
-    cout << "Masukkan minimum block size X: ";
-    cin >> minX;
-    cout << "Masukkan minimum block size Y: ";
-    cin >> minY;
+    int x, y, regionWidth, regionHeight;
+    cout << "Masukkan koordinat x region: ";
+    cin >> x;
+    cout << "Masukkan koordinat y region: ";
+    cin >> y;
+    cout << "Masukkan lebar region: ";
+    cin >> regionWidth;
+    cout << "Masukkan tinggi region: ";
+    cin >> regionHeight;
     
-    // Membuat QuadTree dengan mempertimbangkan ukuran blok minimum
-    // Perlu menggunakan alamat dari matriks piksel untuk pointer
-    const vector<vector<Pixel>>* pixelMatrix = &img.pixels;
-    QuadTree* root = buildQuadTree(pixelMatrix, 0, 0, img.width, img.height, minX, minY);
+    // Hitung mean dan variansi untuk tiap kanal warna
+    for (int ch = 0; ch < 3; ch++) {
+        double mean = calculateMean(&img.pixels, x, y, regionWidth, regionHeight, ch);
+        double var  = calculateVariance(&img.pixels, x, y, regionWidth, regionHeight, ch);
+        string channel = (ch == 0) ? "Red" : (ch == 1) ? "Green" : "Blue";
+        cout << "Channel " << channel << " - Mean: " << mean << ", Variance: " << var << "\n";
+    }
     
-    cout << "\nStruktur Quadtree:\n";
-    printQuadTree(root);
+    double rgbVar = calculateRGBVariance(&img.pixels, x, y, regionWidth, regionHeight);
+    cout << "Rata-rata RGB Variance: " << rgbVar << "\n";
     
     return 0;
 }
