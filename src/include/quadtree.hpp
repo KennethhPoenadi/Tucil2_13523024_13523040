@@ -8,17 +8,20 @@ using namespace std;
 
 class QuadTree {
     private:
-        vector<vector<Pixel>> matrix;
+        const vector<vector<Pixel>>* matrix;
         int x, y, sizeX, sizeY;
+        int minBlockSizeX, minBlockSizeY;
         QuadTree *GambarKiriAtas, *GambarKananAtas, *GambarKiriBawah, *GambarKananBawah;
-
+        
     public:
-        QuadTree(const vector<vector<Pixel>>& mat, int x, int y, int sizeX, int sizeY);
-        vector<vector<Pixel>> getMatrix() const;
+        QuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY);
+        const vector<vector<Pixel>>* getMatrix() const;
         int getX() const;
         int getY() const;
         int getSizeX() const;
         int getSizeY() const;
+        int getMinBlockSizeX() const; // Getter tambahan
+        int getMinBlockSizeY() const;
         QuadTree* getGambarKiriAtas() const;
         QuadTree* getGambarKananAtas() const;
         QuadTree* getGambarKiriBawah() const;
@@ -29,6 +32,6 @@ class QuadTree {
         void setGambarKananBawah(QuadTree* node);
 };
 
-QuadTree* buildQuadTree(const vector<vector<Pixel>>& mat, int x, int y, int sizeX, int sizeY);
+QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY);
 
 #endif
