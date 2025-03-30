@@ -94,3 +94,46 @@ double calculateRGBMad(const vector<vector<Pixel>>* matrix, int x, int y, int si
 }
 
 /* MAD */
+
+/* Max Pixel Difference (MPD) */
+
+double calculateMPDMaxMin(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY, int colorChannel){
+    double maxnya = -1;
+    double minnya = 256;
+
+    for (int j = y; j < y + sizeY && j < static_cast<int>(matrix->size()); j++) {
+        for (int i = x; i < x + sizeX && i < static_cast<int>((*matrix)[j].size()); i++) {
+            double pixelValue;
+            if (colorChannel == 0) // Red
+                pixelValue = (*matrix)[j][i].r;
+            else if (colorChannel == 1) // Green
+                pixelValue = (*matrix)[j][i].g;
+            else // Blue
+                pixelValue = (*matrix)[j][i].b;
+            
+            if (pixelValue > maxnya) {
+                maxnya = pixelValue;
+            }
+
+            if (pixelValue < minnya) {
+                minnya = pixelValue;
+            }
+        }
+    }
+
+    return (maxnya - minnya);
+}
+
+double calculateMPD(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY) {
+    double diffR = calculateMPDMaxMin(matrix, x, y, sizeX, sizeY, 0);
+    double diffG = calculateMPDMaxMin(matrix, x, y, sizeX, sizeY, 1);
+    double diffB = calculateMPDMaxMin(matrix, x, y, sizeX, sizeY, 2);
+    
+    return (diffR + diffG + diffB) / 3.0;
+}
+
+/* Max Pixel Difference (MPD) */
+
+/* Entropy */
+
+/* Entropy */
