@@ -18,6 +18,8 @@ double calculateMPD(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX
 double calculateEntropy(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY, int colorChannel);
 double calculateRGBEntropyTotal(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY);
 
+Pixel getAverageColor(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY);
+
 
 
 #endif

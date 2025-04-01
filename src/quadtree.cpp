@@ -1,5 +1,4 @@
 #include "include/quadtree.hpp"
-
 #include <iostream>
 using namespace std;
 
@@ -74,18 +73,14 @@ QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int size
     
     if (useVariance) {
         error = calculateRGBVariance(mat, x, y, sizeX, sizeY);
-        cout << error;
     } else if (useMPD) {
         error = calculateMPD(mat, x, y, sizeX, sizeY);
-        cout << error;
 
     } else if (useMAD) {
         error = calculateRGBMad(mat, x, y, sizeX, sizeY);
-        cout << error;
 
     } else if (useEntropy) {
         error = calculateRGBEntropyTotal(mat, x, y, sizeX, sizeY); 
-        cout << error;
 
     }
     

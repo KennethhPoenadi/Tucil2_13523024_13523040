@@ -179,3 +179,27 @@ double calculateRGBEntropyTotal(const vector<vector<Pixel>>* matrix, int x, int 
 }
 
 /* Entropy */
+
+/* Normalisasi */
+
+Pixel getAverageColor(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY) {
+    long long totalR = 0, totalG = 0, totalB = 0;
+    int totalPixels = sizeX * sizeY;
+
+    for (int i = y; i < y + sizeY; ++i) {
+        for (int j = x; j < x + sizeX; ++j) {
+            totalR += (*mat)[i][j].r;
+            totalG += (*mat)[i][j].g;
+            totalB += (*mat)[i][j].b;
+        }
+    }
+
+    Pixel avgColor;
+    avgColor.r = static_cast<unsigned char>(totalR / totalPixels);
+    avgColor.g = static_cast<unsigned char>(totalG / totalPixels);
+    avgColor.b = static_cast<unsigned char>(totalB / totalPixels);
+
+    return avgColor;
+}
+
+/* Normalisasi */
