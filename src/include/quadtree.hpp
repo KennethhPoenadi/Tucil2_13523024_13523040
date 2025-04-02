@@ -20,7 +20,7 @@ class QuadTree {
         int getY() const;
         int getSizeX() const;
         int getSizeY() const;
-        int getMinBlockSizeX() const; // Getter tambahan
+        int getMinBlockSizeX() const;
         int getMinBlockSizeY() const;
         QuadTree* getGambarKiriAtas() const;
         QuadTree* getGambarKananAtas() const;
@@ -32,6 +32,5 @@ class QuadTree {
         void setGambarKananBawah(QuadTree* node);
 };
 
-QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY, double threshold, bool useVariance, bool useMPD, bool useMAD, bool useEntropy);
-
+QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY, double threshold, bool useVariance, bool useMPD, bool useMAD, bool useEntropy, bool useSSIM);
 #endif

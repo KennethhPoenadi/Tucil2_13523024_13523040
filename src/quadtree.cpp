@@ -67,7 +67,7 @@ void QuadTree::setGambarKananBawah(QuadTree* node) {
     GambarKananBawah = node;
 }
 
-QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY, double threshold, bool useVariance, bool useMPD, bool useMAD, bool useEntropy) 
+QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY, double threshold, bool useVariance, bool useMPD, bool useMAD, bool useEntropy, bool useSSIM) 
 {
     double error = 0.0;
     
@@ -81,6 +81,18 @@ QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int size
 
     } else if (useEntropy) {
         error = calculateRGBEntropyTotal(mat, x, y, sizeX, sizeY); 
+    } else if (useSSIM) {
+        vector<std::vector<Pixel>> avgBlock(sizeY, vector<Pixel>(sizeX));
+        Pixel avgColor = getAverageColor(mat, x, y, sizeX, sizeY);
+                
+        for (int j = 0; j < sizeY; j++) {
+            for (int i = 0; i < sizeX; i++) {
+                avgBlock[j][i] = avgColor;
+            }
+        }
+
+        double ssim = calculateSSIM_RGB(mat, &avgBlock, x, y, sizeX, sizeY);
+        error = 1.0 - ssim;
 
     }
     
@@ -95,10 +107,10 @@ QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int size
     int sizeY1 = midY, sizeY2 = sizeY - midY;
     
     QuadTree* node = new QuadTree(mat, x, y, sizeX, sizeY, minX, minY);
-    node->setGambarKiriAtas(buildQuadTree(mat, x, y, sizeX1, sizeY1, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy));
-    node->setGambarKananAtas(buildQuadTree(mat, x + sizeX1, y, sizeX2, sizeY1, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy));
-    node->setGambarKiriBawah(buildQuadTree(mat, x, y + sizeY1, sizeX1, sizeY2, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy));
-    node->setGambarKananBawah(buildQuadTree(mat, x + sizeX1, y + sizeY1, sizeX2, sizeY2, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy));
+    node->setGambarKiriAtas(buildQuadTree(mat, x, y, sizeX1, sizeY1, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy, useSSIM));
+    node->setGambarKananAtas(buildQuadTree(mat, x + sizeX1, y, sizeX2, sizeY1, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy,useSSIM));
+    node->setGambarKiriBawah(buildQuadTree(mat, x, y + sizeY1, sizeX1, sizeY2, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy,useSSIM));
+    node->setGambarKananBawah(buildQuadTree(mat, x + sizeX1, y + sizeY1, sizeX2, sizeY2, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy,useSSIM));
     
     return node;
 }

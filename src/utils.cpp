@@ -74,10 +74,8 @@ double calculateMad(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX
             else // Blue
                 pixelValue = (*matrix)[j][i].b;
             
-            sum += (pixelValue - mean);
-            if (sum < 0) {
-                sum *= -1;
-            }
+            double diff = pixelValue - mean;
+            sum += (diff < 0) ? -diff : diff;
             count++;
         }
     }
@@ -203,3 +201,75 @@ Pixel getAverageColor(const vector<vector<Pixel>>* mat, int x, int y, int sizeX,
 }
 
 /* Normalisasi */
+
+/* SSIM (BONUS) */
+
+const double C1 = (0.01 * 255) * (0.01 * 255);  // (K1*L)^2,  K1 = 0.01 dan L = 255
+const double C2 = (0.03 * 255) * (0.03 * 255);  // (K2*L)^2,  K2 = 0.03 dan L = 255
+
+double calculateCovariance(const vector<vector<Pixel>>* matrix1, const vector<vector<Pixel>>* matrix2, int x, int y, int sizeX, int sizeY, int colorChannel) {
+    double mean1 = calculateMean(matrix1, x, y, sizeX, sizeY, colorChannel);
+    double mean2 = calculateMean(matrix2, x, y, sizeX, sizeY, colorChannel);
+    double sum = 0.0;
+    int count = 0;
+
+    for (int j = y; j < y + sizeY && j < static_cast<int>(matrix1->size()) && j < static_cast<int>(matrix2->size()); j++) {
+        for (int i = x; i < x + sizeX && i < static_cast<int>((*matrix1)[j].size()) && i < static_cast<int>((*matrix2)[j].size()); i++) {
+            double pixelValue1, pixelValue2;
+            
+            if (colorChannel == 0) { // Red
+                pixelValue1 = (*matrix1)[j][i].r;
+                pixelValue2 = (*matrix2)[j][i].r;
+            } else if (colorChannel == 1) { // Green
+                pixelValue1 = (*matrix1)[j][i].g;
+                pixelValue2 = (*matrix2)[j][i].g;
+            } else { // Blue
+                pixelValue1 = (*matrix1)[j][i].b;
+                pixelValue2 = (*matrix2)[j][i].b;
+            }
+            
+            sum += (pixelValue1 - mean1) * (pixelValue2 - mean2);
+            count++;
+        }
+    }
+    
+    return (count > 0) ? (sum / count) : 0.0;
+}
+
+double calculateSSIM(const vector<vector<Pixel>>* original, const vector<vector<Pixel>>* compressed, int x, int y, int sizeX, int sizeY, int colorChannel) {
+    double mu1 = calculateMean(original, x, y, sizeX, sizeY, colorChannel);
+    double mu2 = calculateMean(compressed, x, y, sizeX, sizeY, colorChannel);
+    
+    double sigma1_sq = calculateVariance(original, x, y, sizeX, sizeY, colorChannel);
+    double sigma2_sq = calculateVariance(compressed, x, y, sizeX, sizeY, colorChannel);
+    
+    double sigma12 = calculateCovariance(original, compressed, x, y, sizeX, sizeY, colorChannel);
+    
+    double numerator = (2 * mu1 * mu2 + C1) * (2 * sigma12 + C2);
+    double denominator = (mu1 * mu1 + mu2 * mu2 + C1) * (sigma1_sq + sigma2_sq + C2);
+    
+    if (denominator < 1e-10) {
+        return 1.0; 
+    }
+    
+    double ssim = numerator / denominator;
+    
+    return max(0.0, min(1.0, ssim));
+}
+
+double calculateSSIM_RGB(const vector<vector<Pixel>>* original, const vector<vector<Pixel>>* compressed, int x, int y, int sizeX, int sizeY) {
+    const double wR = 0.2989, wG = 0.5870, wB = 0.1140;
+    
+    if (x < 0 || y < 0 || sizeX <= 0 || sizeY <= 0 ||
+        y >= static_cast<int>(original->size()) || y >= static_cast<int>(compressed->size())) {
+        return 0.0;
+    }
+    
+    double SSIM_R = calculateSSIM(original, compressed, x, y, sizeX, sizeY, 0);
+    double SSIM_G = calculateSSIM(original, compressed, x, y, sizeX, sizeY, 1);
+    double SSIM_B = calculateSSIM(original, compressed, x, y, sizeX, sizeY, 2);
+    
+    return (wR * SSIM_R + wG * SSIM_G + wB * SSIM_B);
+}
+
+/* SSIM (BONUS) */
