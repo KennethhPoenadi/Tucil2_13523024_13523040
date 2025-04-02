@@ -7,7 +7,7 @@ using namespace std;
 
 Image loadImage(const string& filename) {
     Image img;
-    unsigned char* data = stbi_load(filename.c_str(), &img.width, &img.height, &img.channels, 3);
+    unsigned char* data = stbi_load(filename.c_str(), &img.width, &img.height, &img.channels, 4);
     
     if (!data) {
         cerr << "Error: Tidak dapat memuat gambar " << filename << endl;
@@ -15,13 +15,16 @@ Image loadImage(const string& filename) {
         return img;
     }
     
-    img.channels = 3;
+    img.channels = 4;
     img.pixels.resize(img.height, vector<Pixel>(img.width));
     
     for (int y = 0; y < img.height; ++y) {
         for (int x = 0; x < img.width; ++x) {
             int index = (y * img.width + x) * img.channels;
-            img.pixels[y][x] = { data[index], data[index+1], data[index+2] };
+            img.pixels[y][x].r = data[index];     // Red
+            img.pixels[y][x].g = data[index+1];   // Green
+            img.pixels[y][x].b = data[index+2];   // Blue
+            img.pixels[y][x].a = data[index+3];   // Alpha
         }
     }
     

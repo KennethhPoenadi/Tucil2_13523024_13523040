@@ -1,7 +1,7 @@
 #include "include/quadtree.hpp"
 #include <cmath>
 
-double calculateMean(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY, int colorChannel) {//berdasarkan color channel yg dia mau
+double calculateMean(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY, int colorChannel) {
     double sum = 0.0;
     int count = 0;
     
@@ -13,6 +13,8 @@ double calculateMean(const vector<vector<Pixel>>* matrix, int x, int y, int size
                 sum += (*matrix)[j][i].g;
             else if (colorChannel == 2) // Blue
                 sum += (*matrix)[j][i].b;
+            else if (colorChannel == 3) // Alpha - new channel
+                sum += (*matrix)[j][i].a;
             count++;
         }
     }
@@ -20,9 +22,9 @@ double calculateMean(const vector<vector<Pixel>>* matrix, int x, int y, int size
     return (count > 0) ? (sum / count) : 0.0;
 }
 
-
 /* Varians */
-double calculateVariance(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY, int colorChannel) {//berdasarkan color channel yg di mau
+
+double calculateVariance(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY, int colorChannel) {
     double mean = calculateMean(matrix, x, y, sizeX, sizeY, colorChannel);
     
     double sum = 0.0;
@@ -35,8 +37,10 @@ double calculateVariance(const vector<vector<Pixel>>* matrix, int x, int y, int 
                 pixelValue = (*matrix)[j][i].r;
             else if (colorChannel == 1) // Green
                 pixelValue = (*matrix)[j][i].g;
-            else // Blue
+            else if (colorChannel == 2) // Blue
                 pixelValue = (*matrix)[j][i].b;
+            else if (colorChannel == 3) // Alpha
+                pixelValue = (*matrix)[j][i].a;
             
             sum += (pixelValue - mean) * (pixelValue - mean);
             count++;
@@ -46,19 +50,20 @@ double calculateVariance(const vector<vector<Pixel>>* matrix, int x, int y, int 
     return (count > 0) ? (sum / count) : 0.0;
 }
 
-double calculateRGBVariance(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY) {//total
+double calculateRGBAVariance(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY) {
     double varianceR = calculateVariance(matrix, x, y, sizeX, sizeY, 0);
     double varianceG = calculateVariance(matrix, x, y, sizeX, sizeY, 1);
     double varianceB = calculateVariance(matrix, x, y, sizeX, sizeY, 2);
+    double varianceA = calculateVariance(matrix, x, y, sizeX, sizeY, 3);
     
-    return (varianceR + varianceG + varianceB) / 3.0;
+    return (varianceR + varianceG + varianceB + varianceA) / 4.0;
 }
 
 /* Varians */
 
 /* MAD */
 
-double calculateMad(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY, int colorChannel) {//berdasarkan color channel yg di mau
+double calculateMad(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY, int colorChannel) {
     double mean = calculateMean(matrix, x, y, sizeX, sizeY, colorChannel);
     
     double sum = 0.0;
@@ -71,8 +76,10 @@ double calculateMad(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX
                 pixelValue = (*matrix)[j][i].r;
             else if (colorChannel == 1) // Green
                 pixelValue = (*matrix)[j][i].g;
-            else // Blue
+            else if (colorChannel == 2) // Blue
                 pixelValue = (*matrix)[j][i].b;
+            else if (colorChannel == 3) // Alpha
+                pixelValue = (*matrix)[j][i].a;
             
             double diff = pixelValue - mean;
             sum += (diff < 0) ? -diff : diff;
@@ -83,19 +90,20 @@ double calculateMad(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX
     return (count > 0) ? (sum / count) : 0.0;
 }
 
-double calculateRGBMad(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY) {//total
+double calculateRGBAMad(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY) {
     double MadR = calculateMad(matrix, x, y, sizeX, sizeY, 0);
     double MadG = calculateMad(matrix, x, y, sizeX, sizeY, 1);
     double MadB = calculateMad(matrix, x, y, sizeX, sizeY, 2);
+    double MadA = calculateMad(matrix, x, y, sizeX, sizeY, 3);
     
-    return (MadR + MadG + MadB) / 3.0;
+    return (MadR + MadG + MadB + MadA) / 4.0;
 }
 
 /* MAD */
 
 /* Max Pixel Difference (MPD) */
 
-double calculateMPDMaxMin(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY, int colorChannel){
+double calculateMPDMaxMin(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY, int colorChannel) {
     double maxnya = -1;
     double minnya = 256;
 
@@ -106,8 +114,10 @@ double calculateMPDMaxMin(const vector<vector<Pixel>>* matrix, int x, int y, int
                 pixelValue = (*matrix)[j][i].r;
             else if (colorChannel == 1) // Green
                 pixelValue = (*matrix)[j][i].g;
-            else // Blue
+            else if (colorChannel == 2) // Blue
                 pixelValue = (*matrix)[j][i].b;
+            else if (colorChannel == 3) // Alpha
+                pixelValue = (*matrix)[j][i].a;
             
             if (pixelValue > maxnya) {
                 maxnya = pixelValue;
@@ -126,8 +136,9 @@ double calculateMPD(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX
     double diffR = calculateMPDMaxMin(matrix, x, y, sizeX, sizeY, 0);
     double diffG = calculateMPDMaxMin(matrix, x, y, sizeX, sizeY, 1);
     double diffB = calculateMPDMaxMin(matrix, x, y, sizeX, sizeY, 2);
+    double diffA = calculateMPDMaxMin(matrix, x, y, sizeX, sizeY, 3);
     
-    return (diffR + diffG + diffB) / 3.0;
+    return (diffR + diffG + diffB + diffA) / 4.0;
 }
 
 /* Max Pixel Difference (MPD) */
@@ -147,8 +158,10 @@ double calculateEntropy(const vector<vector<Pixel>>* matrix, int x, int y, int s
                 pixelValue = (*matrix)[j][i].r;
             else if (colorChannel == 1) // Green
                 pixelValue = (*matrix)[j][i].g;
-            else // Blue
+            else if (colorChannel == 2) // Blue
                 pixelValue = (*matrix)[j][i].b;
+            else if (colorChannel == 3) // Alpha
+                pixelValue = (*matrix)[j][i].a;
             
             histogram[pixelValue]++;
             totalPixels++;
@@ -168,12 +181,13 @@ double calculateEntropy(const vector<vector<Pixel>>* matrix, int x, int y, int s
     return entropy;
 }
 
-double calculateRGBEntropyTotal(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY) {
+double calculateRGBAEntropyTotal(const vector<vector<Pixel>>* matrix, int x, int y, int sizeX, int sizeY) {
     double entropyR = calculateEntropy(matrix, x, y, sizeX, sizeY, 0);
     double entropyG = calculateEntropy(matrix, x, y, sizeX, sizeY, 1);
     double entropyB = calculateEntropy(matrix, x, y, sizeX, sizeY, 2);
+    double entropyA = calculateEntropy(matrix, x, y, sizeX, sizeY, 3);
     
-    return (entropyR + entropyG + entropyB) / 3.0;
+    return (entropyR + entropyG + entropyB + entropyA) / 4.0;
 }
 
 /* Entropy */
@@ -181,7 +195,7 @@ double calculateRGBEntropyTotal(const vector<vector<Pixel>>* matrix, int x, int 
 /* Normalisasi */
 
 Pixel getAverageColor(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY) {
-    long long totalR = 0, totalG = 0, totalB = 0;
+    long long totalR = 0, totalG = 0, totalB = 0, totalA = 0;
     int totalPixels = sizeX * sizeY;
 
     for (int i = y; i < y + sizeY; ++i) {
@@ -189,6 +203,7 @@ Pixel getAverageColor(const vector<vector<Pixel>>* mat, int x, int y, int sizeX,
             totalR += (*mat)[i][j].r;
             totalG += (*mat)[i][j].g;
             totalB += (*mat)[i][j].b;
+            totalA += (*mat)[i][j].a;
         }
     }
 
@@ -196,6 +211,7 @@ Pixel getAverageColor(const vector<vector<Pixel>>* mat, int x, int y, int sizeX,
     avgColor.r = static_cast<unsigned char>(totalR / totalPixels);
     avgColor.g = static_cast<unsigned char>(totalG / totalPixels);
     avgColor.b = static_cast<unsigned char>(totalB / totalPixels);
+    avgColor.a = static_cast<unsigned char>(totalA / totalPixels);
 
     return avgColor;
 }
@@ -204,8 +220,8 @@ Pixel getAverageColor(const vector<vector<Pixel>>* mat, int x, int y, int sizeX,
 
 /* SSIM (BONUS) */
 
-const double C1 = (0.01 * 255) * (0.01 * 255);  // (K1*L)^2,  K1 = 0.01 dan L = 255
-const double C2 = (0.03 * 255) * (0.03 * 255);  // (K2*L)^2,  K2 = 0.03 dan L = 255
+const double C1 = (0.01 * 255) * (0.01 * 255);
+const double C2 = (0.03 * 255) * (0.03 * 255);
 
 double calculateCovariance(const vector<vector<Pixel>>* matrix1, const vector<vector<Pixel>>* matrix2, int x, int y, int sizeX, int sizeY, int colorChannel) {
     double mean1 = calculateMean(matrix1, x, y, sizeX, sizeY, colorChannel);
@@ -223,9 +239,12 @@ double calculateCovariance(const vector<vector<Pixel>>* matrix1, const vector<ve
             } else if (colorChannel == 1) { // Green
                 pixelValue1 = (*matrix1)[j][i].g;
                 pixelValue2 = (*matrix2)[j][i].g;
-            } else { // Blue
+            } else if (colorChannel == 2) { // Blue
                 pixelValue1 = (*matrix1)[j][i].b;
                 pixelValue2 = (*matrix2)[j][i].b;
+            } else { // Alpha
+                pixelValue1 = (*matrix1)[j][i].a;
+                pixelValue2 = (*matrix2)[j][i].a;
             }
             
             sum += (pixelValue1 - mean1) * (pixelValue2 - mean2);
@@ -257,8 +276,10 @@ double calculateSSIM(const vector<vector<Pixel>>* original, const vector<vector<
     return max(0.0, min(1.0, ssim));
 }
 
-double calculateSSIM_RGB(const vector<vector<Pixel>>* original, const vector<vector<Pixel>>* compressed, int x, int y, int sizeX, int sizeY) {
-    const double wR = 0.2989, wG = 0.5870, wB = 0.1140;
+double calculateSSIM_RGBA(const vector<vector<Pixel>>* original, const vector<vector<Pixel>>* compressed, int x, int y, int sizeX, int sizeY) {
+    // Modified weights for RGBA, accounting for alpha
+    const double wR = 0.2125, wG = 0.7154, wB = 0.0721, wA = 0.1;
+    double totalWeight = wR + wG + wB + wA;
     
     if (x < 0 || y < 0 || sizeX <= 0 || sizeY <= 0 ||
         y >= static_cast<int>(original->size()) || y >= static_cast<int>(compressed->size())) {
@@ -268,8 +289,9 @@ double calculateSSIM_RGB(const vector<vector<Pixel>>* original, const vector<vec
     double SSIM_R = calculateSSIM(original, compressed, x, y, sizeX, sizeY, 0);
     double SSIM_G = calculateSSIM(original, compressed, x, y, sizeX, sizeY, 1);
     double SSIM_B = calculateSSIM(original, compressed, x, y, sizeX, sizeY, 2);
+    double SSIM_A = calculateSSIM(original, compressed, x, y, sizeX, sizeY, 3);
     
-    return (wR * SSIM_R + wG * SSIM_G + wB * SSIM_B);
+    return (wR * SSIM_R + wG * SSIM_G + wB * SSIM_B + wA * SSIM_A) / totalWeight;
 }
 
 /* SSIM (BONUS) */

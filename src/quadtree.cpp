@@ -3,7 +3,7 @@
 using namespace std;
 
 QuadTree::QuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY)
-    : matrix(mat), x(x), y(y), sizeX(sizeX), sizeY(sizeY),
+    : matrix(mat), x(x), y(y), sizeX(sizeX), sizeY(sizeY), 
       minBlockSizeX(minX), minBlockSizeY(minY),
       GambarKiriAtas(nullptr), GambarKananAtas(nullptr), GambarKiriBawah(nullptr), GambarKananBawah(nullptr) {}
 
@@ -72,15 +72,15 @@ QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int size
     double error = 0.0;
     
     if (useVariance) {
-        error = calculateRGBVariance(mat, x, y, sizeX, sizeY);
+        error = calculateRGBAVariance(mat, x, y, sizeX, sizeY);
     } else if (useMPD) {
         error = calculateMPD(mat, x, y, sizeX, sizeY);
 
     } else if (useMAD) {
-        error = calculateRGBMad(mat, x, y, sizeX, sizeY);
+        error = calculateRGBAMad(mat, x, y, sizeX, sizeY);
 
     } else if (useEntropy) {
-        error = calculateRGBEntropyTotal(mat, x, y, sizeX, sizeY); 
+        error = calculateRGBAEntropyTotal(mat, x, y, sizeX, sizeY); 
     } else if (useSSIM) {
         vector<std::vector<Pixel>> avgBlock(sizeY, vector<Pixel>(sizeX));
         Pixel avgColor = getAverageColor(mat, x, y, sizeX, sizeY);
@@ -91,7 +91,7 @@ QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int size
             }
         }
 
-        double ssim = calculateSSIM_RGB(mat, &avgBlock, x, y, sizeX, sizeY);
+        double ssim = calculateSSIM_RGBA(mat, &avgBlock, x, y, sizeX, sizeY);
         error = 1.0 - ssim;
 
     }

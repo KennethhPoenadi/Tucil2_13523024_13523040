@@ -10,7 +10,7 @@
 using namespace std;
 
 struct Pixel {
-    unsigned char r, g, b;
+    unsigned char r, g, b, a;
 };
 
 struct Image {
