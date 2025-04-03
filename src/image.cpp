@@ -4,6 +4,7 @@
 #include "include/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "include/stb_image_write.h"
+#include <fstream>
 
 using namespace std;
 
@@ -105,4 +106,13 @@ string getFileExtension(const string& filename) {
     size_t dotPos = filename.find_last_of(".");
     if (dotPos == string::npos) return "";
     return filename.substr(dotPos + 1);
+}
+
+double getFileSize(const string& fileName) {
+    std::ifstream file(fileName, std::ios::binary | std::ios::ate);
+    return file.tellg()/1024;
+}
+
+double calculateCompression(double originalSize, double compressedSize) {
+    return (1 - (compressedSize / originalSize)) * 100;
 }

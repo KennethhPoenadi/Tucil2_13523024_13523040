@@ -23,6 +23,8 @@ int main() {
         return 1;
     }
     
+    double inputFileSize = getFileSize(filename);
+
     cout << "Dimensi Gambar: " << img.width << " x " << img.height << "\n";
 
     int methodInput;
@@ -73,7 +75,15 @@ int main() {
     
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast <chrono::milliseconds>(end-start);
-    cout << "Proses memakan waktu " << duration.count() << " ms" <<endl;
+    cout << "---------------------------------" << endl;
+    cout << "Waktu kompresi      : " << duration.count() << " ms" <<endl;
+
+    double outputFileSize = getFileSize(outputFilename + "." + ext);
+
+    cout << "Ukuran file input   : " << inputFileSize << " KB\n";
+    cout << "Ukuran file output  : " << outputFileSize << " KB\n";
+    double compressionPerc = calculateCompression(inputFileSize, outputFileSize);
+    cout << "Persentase kompresi : " << compressionPerc << " %\n";
 
     return 0;
 }

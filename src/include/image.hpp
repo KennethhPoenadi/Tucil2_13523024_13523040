@@ -26,5 +26,7 @@ Image loadImage(const string& filename);
 bool checkFile(const string& filename);
 void saveReconstructedImage(const std::string &filename, const std::vector<vector<Pixel>>& image, const string& format);
 string getFileExtension(const string& filename);
+double getFileSize(const string& fileName);
+double calculateCompression(double originalSize, double compressedSize);
 
 #endif
