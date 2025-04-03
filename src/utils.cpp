@@ -13,7 +13,7 @@ double calculateMean(const vector<vector<Pixel>>* matrix, int x, int y, int size
                 sum += (*matrix)[j][i].g;
             else if (colorChannel == 2) // Blue
                 sum += (*matrix)[j][i].b;
-            else if (colorChannel == 3) // Alpha - new channel
+            else if (colorChannel == 3)
                 sum += (*matrix)[j][i].a;
             count++;
         }

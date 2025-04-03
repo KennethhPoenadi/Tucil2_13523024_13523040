@@ -7,22 +7,6 @@
 
 using namespace std;
 
-/* masi testing ya wkwk */
-
-void printQuadTree(QuadTree* node, int depth = 0) {
-    if (!node) return;
-    
-    for (int i = 0; i < depth; ++i)
-        cout << "  ";
-    cout << "Node at (" << node->getX() << ", " << node->getY() << ") - Size: "
-         << node->getSizeX() << "x" << node->getSizeY() << "\n";
-    
-    printQuadTree(node->getGambarKiriAtas(), depth + 1);
-    printQuadTree(node->getGambarKananAtas(), depth + 1);
-    printQuadTree(node->getGambarKiriBawah(), depth + 1);
-    printQuadTree(node->getGambarKananBawah(), depth + 1);
-}
-
 int main() {
     string filename;
     cout << "Masukkan nama file gambar: ";
@@ -43,7 +27,7 @@ int main() {
 
     int methodInput;
     cout << "Pilih metode error:\n";
-    cout << "0: Variance\n1: MPD\n2: MAD\n3: Entropy\n";
+    cout << "1: Variance\n2: MPD\n3: MAD\n4: Entropy\n5: SSIM\n";
     cout << "Pilihan: ";
     cin >> methodInput;
 
@@ -64,26 +48,21 @@ int main() {
 
     auto start = chrono::high_resolution_clock::now();
     
-    // Set parameter boolean sesuai pilihan (asumsikan hanya satu yang true)
     bool useVariance = false, useMPD = false, useMAD = false, useEntropy = false, useSSIM = false;
     switch (methodInput) {
-        case 0: useVariance = true; break;
-        case 1: useMPD = true; break;
-        case 2: useMAD = true; break;
-        case 3: useEntropy = true; break;
-        case 4: useSSIM = true; break;
+        case 1: useVariance = true; break;
+        case 2: useMPD = true; break;
+        case 3: useMAD = true; break;
+        case 4: useEntropy = true; break;
+        case 5: useSSIM = true; break;
         default:
-            cout << "Input tidak valid. Default ke Variance.\n";
+            cout << "Input tidak valid. Default ke Varians.\n";
             useVariance = true;
             break;
     }
     
-    // Pastikan untuk mengirim alamat dari matriks piksel
     const vector<vector<Pixel>>* pixelMatrix = &img.pixels;
     QuadTree* root = QuadTree::buildQuadTree(pixelMatrix, 0, 0, img.width, img.height, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy, useSSIM);
-    
-    //cout << "\nStruktur Quadtree:\n";
-    //printQuadTree(root);
 
     vector<vector<Pixel>> reconstructImageMatrix(img.height, vector<Pixel>(img.width));
     root->reconstructImage(root, reconstructImageMatrix, 0, 0);
