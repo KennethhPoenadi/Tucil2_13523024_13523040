@@ -149,3 +149,33 @@ void QuadTree::reconstructImage(QuadTree* node, vector<vector<Pixel>>& pixelMatr
         reconstructImage(node -> getGambarKananBawah(), pixelMatrix, offsetX + node->getSizeX() /2, offsetY + node->getSizeY() /2);
     }
 }
+
+int QuadTree::depthTree(QuadTree* node, int depth) {
+    if (!node) return 0;
+    
+    if (node->isLeaf(node)) {
+        return depth;
+    }
+    
+    int leftTopDepth = depthTree(node->getGambarKiriAtas(), depth + 1);
+    int rightTopDepth = depthTree(node->getGambarKananAtas(), depth + 1);
+    int leftBottomDepth = depthTree(node->getGambarKiriBawah(), depth + 1);
+    int rightBottomDepth = depthTree(node->getGambarKananBawah(), depth + 1);
+    
+    int maxDepth = max(max(leftTopDepth, rightTopDepth), max(leftBottomDepth, rightBottomDepth));
+    
+    return maxDepth;
+}
+
+long QuadTree::countNode(QuadTree* node, long nodes) {
+    if (!node) return nodes;
+    
+    long count = nodes + 1;
+
+    count = countNode(node->getGambarKiriAtas(), count);
+    count = countNode(node->getGambarKananAtas(), count);
+    count = countNode(node->getGambarKiriBawah(), count);
+    count = countNode(node->getGambarKananBawah(), count);
+    
+    return count;
+}

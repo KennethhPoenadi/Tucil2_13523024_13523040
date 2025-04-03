@@ -34,6 +34,8 @@ class QuadTree {
         static QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY, double threshold, bool useVariance, bool useMPD, bool useMAD, bool useEntropy, bool useSSIM);
         bool isLeaf(QuadTree* node);
         void reconstructImage(QuadTree* node, vector<vector<Pixel>>& pixelMatrix, int x, int y);
+        static int depthTree(QuadTree* node, int depth=0);
+        static long countNode(QuadTree* node, long nodes=0);
 };
 
 #endif

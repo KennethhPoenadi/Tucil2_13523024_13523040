@@ -84,6 +84,12 @@ int main() {
     cout << "Ukuran file output  : " << outputFileSize << " KB\n";
     double compressionPerc = calculateCompression(inputFileSize, outputFileSize);
     cout << "Persentase kompresi : " << compressionPerc << " %\n";
+    cout << "Proses memakan waktu " << duration.count() << " ms" <<endl;
+    cout << "----------------------------------" << endl;
+    cout << "Kedalaman Quadtree: " << QuadTree::depthTree(root) << endl;
+    cout << "Jumlah simpul pada Tree: " <<  QuadTree::countNode(root) << endl;
+    cout << "----------------------------------" << endl;
+
 
     return 0;
 }
