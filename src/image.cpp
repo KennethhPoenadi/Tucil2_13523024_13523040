@@ -84,17 +84,17 @@ void saveReconstructedImage(const std::string &filename, const std::vector<std::
         }
     }
 
-    if (format == "png") {
+     if (format == "png") {
         if (!stbi_write_png((filename + ".png").c_str(), width, height, channels, data, width * channels)) {
-            std::cout << "Failed to save PNG" << std::endl;
+            std::cout << "Gagal save PNG" << std::endl;
         } else {
-            std::cout << "PNG image successfully saved" << std::endl;
+            std::cout << "PNG berhasil disave" << std::endl;
         }
     } else if (format == "jpg" || format == "jpeg") {
         if (!stbi_write_jpg((filename + ".jpg").c_str(), width, height, channels, data, 50)) {
-            std::cout << "Failed to save JPG" << std::endl;
+            std::cout << "Gagal save JPG/JPEG" << std::endl;
         } else {
-            std::cout << "JPG image successfully saved" << std::endl;
+            std::cout << "JPG/JPEG berhasil disave" << std::endl;
         }
     }
 
