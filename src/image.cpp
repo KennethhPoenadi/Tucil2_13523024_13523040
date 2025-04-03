@@ -91,13 +91,19 @@ void saveReconstructedImage(const std::string &filename, const std::vector<std::
         } else {
             std::cout << "PNG berhasil disave" << std::endl;
         }
-    } else if (format == "jpg" || format == "jpeg") {
+    } else if (format == "jpg") {
         if (!stbi_write_jpg((filename + ".jpg").c_str(), width, height, channels, data, 50)) {
-            std::cout << "Gagal save JPG/JPEG" << std::endl;
+            std::cout << "Gagal save JPG" << std::endl;
         } else {
-            std::cout << "JPG/JPEG berhasil disave" << std::endl;
+            std::cout << "JPG berhasil disave" << std::endl;
         }
-    }
+    } else if (format == "jpeg") {
+        if (!stbi_write_jpg((filename + ".jpeg").c_str(), width, height, channels, data, 50)) {
+            std::cout << "Gagal save JPEG" << std::endl;
+        } else {
+            std::cout << "JPEG berhasil disave" << std::endl;
+        }
+    } 
 
     delete[] data;
 }
