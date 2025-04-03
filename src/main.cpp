@@ -88,7 +88,9 @@ int main() {
     vector<vector<Pixel>> reconstructImageMatrix(img.height, vector<Pixel>(img.width));
     root->reconstructImage(root, reconstructImageMatrix, 0, 0);
 
-    saveReconstructedImage(outputFilename, reconstructImageMatrix);
+    string ext = getFileExtension(filename);
+
+    saveReconstructedImage(outputFilename, reconstructImageMatrix, ext);
     
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast <chrono::milliseconds>(end-start);

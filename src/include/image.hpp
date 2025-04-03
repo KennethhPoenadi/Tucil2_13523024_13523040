@@ -17,12 +17,14 @@ struct Image {
     int width;
     int height;
     int channels;
+    
     vector<std::vector<Pixel>> pixels;
 };
 
+
 Image loadImage(const string& filename);
 bool checkFile(const string& filename);
-void saveReconstructedImage(const std::string &filename, const std::vector<vector<Pixel>>& image);
-
+void saveReconstructedImage(const std::string &filename, const std::vector<vector<Pixel>>& image, const string& format);
+string getFileExtension(const string& filename);
 
 #endif
