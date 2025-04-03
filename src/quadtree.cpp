@@ -1,5 +1,6 @@
 #include "include/quadtree.hpp"
 #include <iostream>
+#include "include/image.hpp"
 using namespace std;
 
 QuadTree::QuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY)
@@ -67,7 +68,7 @@ void QuadTree::setGambarKananBawah(QuadTree* node) {
     GambarKananBawah = node;
 }
 
-QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY, double threshold, bool useVariance, bool useMPD, bool useMAD, bool useEntropy, bool useSSIM) 
+QuadTree* QuadTree::buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY, double threshold, bool useVariance, bool useMPD, bool useMAD, bool useEntropy, bool useSSIM) 
 {
     double error = 0.0;
     
@@ -98,7 +99,9 @@ QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int size
     
     //berentikan pembagian jika ukuran blok sudah mencapai minimum atau error kurang dari atau sama dengan threshold
     if (sizeX <= minX || sizeY <= minY || error < threshold) {
-        return new QuadTree(mat, x, y, sizeX, sizeY, minX, minY);
+        QuadTree* leaf = new QuadTree(mat, x, y, sizeX, sizeY, minX, minY);
+        leaf->averageColor = getAverageColor(mat, x, y, sizeX, sizeY);
+        return leaf;
     }
     
     int midX = sizeX / 2;
@@ -113,4 +116,36 @@ QuadTree* buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int size
     node->setGambarKananBawah(buildQuadTree(mat, x + sizeX1, y + sizeY1, sizeX2, sizeY2, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy,useSSIM));
     
     return node;
+}
+
+bool QuadTree::isLeaf(QuadTree* node) {
+    if ((node->getGambarKiriAtas() == nullptr) && (node->getGambarKananAtas() == nullptr) && (node->getGambarKiriBawah() == nullptr) && (node->getGambarKananBawah() == nullptr)) return true;
+    else return false;
+}
+
+void QuadTree::reconstructImage(QuadTree* node, vector<vector<Pixel>>& pixelMatrix, int offsetX, int offsetY){
+    if(!node) return;
+
+    if (isLeaf(node)) {
+        for (int i = 0; i < node -> getSizeY(); i++) {
+            for (int j = 0; j < node -> getSizeX(); j++) {
+                int imgX = offsetX + j;
+                int imgY = offsetY + i;
+                pixelMatrix[imgY][imgX] = node->averageColor;
+            }
+        }
+        return;
+    }
+    if (node -> getGambarKiriAtas()) {
+        reconstructImage(node -> getGambarKiriAtas(), pixelMatrix, offsetX, offsetY);
+    }
+    if (node -> getGambarKananAtas()) {
+        reconstructImage(node -> getGambarKananAtas(), pixelMatrix, offsetX + node->getSizeX() /2, offsetY);
+    }
+    if (node -> getGambarKiriBawah()) {
+        reconstructImage(node -> getGambarKiriBawah(), pixelMatrix, offsetX, offsetY + node->getSizeY() /2);
+    }
+    if (node -> getGambarKananBawah()) {
+        reconstructImage(node -> getGambarKananBawah(), pixelMatrix, offsetX + node->getSizeX() /2, offsetY + node->getSizeY() /2);
+    }
 }

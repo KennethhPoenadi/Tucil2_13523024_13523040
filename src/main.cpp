@@ -3,6 +3,7 @@
 #include "include/utils.hpp"
 #include <iostream>
 #include <string>
+#include <chrono>
 
 using namespace std;
 
@@ -39,30 +40,38 @@ int main() {
     }
     
     cout << "Dimensi Gambar: " << img.width << " x " << img.height << "\n";
-    
-    int minX, minY;
-    cout << "Masukkan minimum block size X: ";
-    cin >> minX;
-    cout << "Masukkan minimum block size Y: ";
-    cin >> minY;
-    
-    double threshold;
-    cout << "Masukkan threshold error: ";
-    cin >> threshold;
-    
+
     int methodInput;
     cout << "Pilih metode error:\n";
     cout << "0: Variance\n1: MPD\n2: MAD\n3: Entropy\n";
     cout << "Pilihan: ";
     cin >> methodInput;
+
+    double threshold;
+    cout << "Masukkan threshold error: ";
+    cin >> threshold;
+
+    int minX, minY;
+    cout << "Masukkan minimum block size X: ";
+    cin >> minX;
+    cout << "Masukkan minimum block size Y: ";
+    cin >> minY;
+
+    string outputFilename;
+    cout << "Masukkan nama file gambar output: ";
+    cin.ignore();
+    getline(cin, outputFilename);
+
+    auto start = chrono::high_resolution_clock::now();
     
     // Set parameter boolean sesuai pilihan (asumsikan hanya satu yang true)
-    bool useVariance = false, useMPD = false, useMAD = false, useEntropy = false;
+    bool useVariance = false, useMPD = false, useMAD = false, useEntropy = false, useSSIM = false;
     switch (methodInput) {
         case 0: useVariance = true; break;
         case 1: useMPD = true; break;
         case 2: useMAD = true; break;
         case 3: useEntropy = true; break;
+        case 4: useSSIM = true; break;
         default:
             cout << "Input tidak valid. Default ke Variance.\n";
             useVariance = true;
@@ -71,10 +80,19 @@ int main() {
     
     // Pastikan untuk mengirim alamat dari matriks piksel
     const vector<vector<Pixel>>* pixelMatrix = &img.pixels;
-    QuadTree* root = buildQuadTree(pixelMatrix, 0, 0, img.width, img.height, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy);
+    QuadTree* root = QuadTree::buildQuadTree(pixelMatrix, 0, 0, img.width, img.height, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy, useSSIM);
     
-    cout << "\nStruktur Quadtree:\n";
-    printQuadTree(root);
+    //cout << "\nStruktur Quadtree:\n";
+    //printQuadTree(root);
+
+    vector<vector<Pixel>> reconstructImageMatrix(img.height, vector<Pixel>(img.width));
+    root->reconstructImage(root, reconstructImageMatrix, 0, 0);
+
+    saveReconstructedImage(outputFilename, reconstructImageMatrix);
     
+    auto end = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast <chrono::milliseconds>(end-start);
+    cout << "Proses memakan waktu " << duration.count() << " ms" <<endl;
+
     return 0;
 }

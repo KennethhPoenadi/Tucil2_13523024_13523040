@@ -2,6 +2,8 @@
 #include <iostream>
 #define STB_IMAGE_IMPLEMENTATION
 #include "include/stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "include/stb_image_write.h"
 
 using namespace std;
 
@@ -39,4 +41,30 @@ bool checkFile(const string& filename) {
         return true;
     }
     return false;
+}
+
+void saveReconstructedImage(const std::string &filename, const std::vector<vector<Pixel>>& image){
+    int height = image.size();
+    int width = image[0].size();
+
+    unsigned char* data = new unsigned char[width * height * 4];
+
+    for (int y = 0; y < height; ++y) {
+        for (int x = 0; x < width; ++x) {
+            const Pixel & p = image[y][x];
+            int index = (y * width + x) * 4;
+            data[index] = p.r;
+            data[index+1] = p.g;
+            data[index+2] = p.b;
+            data[index+3] = p.a;
+        }
+    }
+
+    if (!stbi_write_png((filename + ".png").c_str(), width, height, 4, data, width * 4)) {
+        std::cout << "failed to save" << std::endl;
+    } else {
+        std::cout << "Gambar berhasil disimpan" << std::endl;
+    }
+
+    delete[] data;
 }

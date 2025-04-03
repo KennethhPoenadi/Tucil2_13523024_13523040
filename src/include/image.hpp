@@ -22,5 +22,7 @@ struct Image {
 
 Image loadImage(const string& filename);
 bool checkFile(const string& filename);
+void saveReconstructedImage(const std::string &filename, const std::vector<vector<Pixel>>& image);
+
 
 #endif
