@@ -76,7 +76,7 @@ int main() {
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast <chrono::milliseconds>(end-start);
     cout << "---------------------------------" << endl;
-    cout << "Waktu kompresi      : " << duration.count() << " ms" <<endl;
+    cout << "Waktu eksekusi      : " << duration.count() << " ms" <<endl;
 
     double outputFileSize = getFileSize(outputFilename + "." + ext);
 
@@ -84,7 +84,6 @@ int main() {
     cout << "Ukuran file output  : " << outputFileSize << " KB\n";
     double compressionPerc = calculateCompression(inputFileSize, outputFileSize);
     cout << "Persentase kompresi : " << compressionPerc << " %\n";
-    cout << "Proses memakan waktu " << duration.count() << " ms" <<endl;
     cout << "----------------------------------" << endl;
     cout << "Kedalaman Quadtree: " << QuadTree::depthTree(root) << endl;
     cout << "Jumlah simpul pada Tree: " <<  QuadTree::countNode(root) << endl;
