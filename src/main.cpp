@@ -10,7 +10,10 @@ using namespace std;
 
 int main() {
     string filename;
-    cout << "Masukkan nama file gambar: ";
+    cout << "======================================" << endl;
+    cout << "WELCOME TO COMPRESS QUADTREE TERGACOR!" << endl;
+    cout << "======================================" << endl;
+    cout << "Silahkan masukkan path file gambar: ";
     getline(cin, filename);
     
     if (!checkFile(filename)) {
@@ -25,12 +28,17 @@ int main() {
     }
     
     double inputFileSize = getFileSize(filename);
-    cout << "Dimensi Gambar: " << img.width << " x " << img.height << "\n";
+    cout << "======================================" << endl;
+    cout << "       Dimensi Gambar: " << img.width << " x " << img.height << "" << endl;
+    cout << "======================================" << endl;
+
     
     int compressionChoice;
-    cout << "Pilih metode kompresi:\n";
-    cout << "1: Manual (pilih metode error dan threshold)\n";
+    cout << "Silahkan pilih metode kompresi:" << endl;
+    cout << "1: Manual (pilih metode error dan threshold)" << endl;
     cout << "2: Otomatis (berdasarkan target persentase kompresi)\n";
+    cout << "======================================" << endl;
+
     cout << "Pilihan: ";
     cin >> compressionChoice;
     
@@ -41,10 +49,14 @@ int main() {
     
     if (compressionChoice == 1) {
         int methodInput;
-        cout << "Pilih metode error:\n";
+        cout << "======================================" << endl;
+        cout << "Pilih metode error:" << endl;
         cout << "1: Variance\n2: MPD\n3: MAD\n4: Entropy\n5: SSIM" << endl;
+        cout << "======================================" << endl;
         cout << "Pilihan: ";
         cin >> methodInput;
+        cout << "======================================" << endl;
+
         
         cout << "Masukkan threshold error: ";
         cin >> threshold;
@@ -53,8 +65,9 @@ int main() {
         cin >> minX;
         cout << "Masukkan minimum block size Y: ";
         cin >> minY;
+        cout << "======================================" << endl;
         
-        cout << "Masukkan nama file gambar output: ";
+        cout << "Masukkan path file gambar output: ";
         cin.ignore();
         getline(cin, outputFilename);
         
@@ -71,8 +84,10 @@ int main() {
         }
     } else if (compressionChoice == 2) {
         double targetCompressionRate;
-        cout << "Masukkan target persentase kompresi (contoh: 60 untuk 60%): ";
+        cout << "Masukkan target kompresi (0.01 - 1): ";
         cin >> targetCompressionRate;
+
+        targetCompressionRate * 100;
         
         int errorMethod;
         errorMethod = 2;
@@ -86,6 +101,8 @@ int main() {
         cout << "Masukkan nama file gambar output: ";
         cin.ignore();
         getline(cin, outputFilename);
+        cout << "======================================" << endl;
+        cout << endl;
         
         cout << "\nMencari parameter optimal untuk target kompresi " << targetCompressionRate << "%...\n";
         
@@ -122,20 +139,23 @@ int main() {
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::milliseconds>(end-start);
     
-    cout << "---------------------------------" << endl;
-    cout << "Waktu eksekusi : " << duration.count() << " ms" << endl;
-    
     double outputFileSize = getFileSize(outputFilename + "." + ext);
-    cout << "Ukuran file input : " << inputFileSize << " KB\n";
-    cout << "Ukuran file output : " << outputFileSize << " KB\n";
     
     double compressionPerc = calculateCompression(inputFileSize, outputFileSize);
-    cout << "Persentase kompresi : " << compressionPerc << " %\n";
-    
-    cout << "----------------------------------" << endl;
-    cout << "Kedalaman Quadtree: " << QuadTree::depthTree(root) << endl;
-    cout << "Jumlah simpul pada Tree: " << QuadTree::countNode(root) << endl;
-    cout << "----------------------------------" << endl;
+    cout << "\n=====================================" << endl;
+    cout << "            HASIL KOMPRESI           " << endl;
+    cout << "=====================================" << endl;
+
+    cout << " Waktu eksekusi: " << duration.count() << " ms" << endl;
+    cout << " Ukuran file input: " << inputFileSize << " KB" << endl;
+    cout << " Ukuran file output: " << outputFileSize << " KB" << endl;
+    cout << " Persentase kompresi: " << compressionPerc << " %" << endl;
+
+    cout << "--------------------------------------" << endl;
+    cout << " Kedalaman Quadtree: " << QuadTree::depthTree(root) << endl;
+    cout << " Jumlah simpul pada Tree: " << QuadTree::countNode(root) << endl;
+    cout << "=====================================" << endl;
+
     
     delete root;
     return 0;

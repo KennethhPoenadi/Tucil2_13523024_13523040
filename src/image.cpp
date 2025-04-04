@@ -52,7 +52,7 @@ bool checkFile(const string& filename) {
     return false;
 }
 
-void saveReconstructedImage(const std::string &filename, const std::vector<std::vector<Pixel>>& image, const string& format) {
+void saveReconstructedImage(const  string &filename, const  vector< vector<Pixel>>& image, const string& format) {
     int height = image.size();
     int width = image[0].size();
 
@@ -87,21 +87,34 @@ void saveReconstructedImage(const std::string &filename, const std::vector<std::
 
      if (format == "png") {
         if (!stbi_write_png((filename + ".png").c_str(), width, height, channels, data, width * channels)) {
-            std::cout << "Gagal save PNG" << std::endl;
+             cout << "Gagal save PNG" <<  endl;
         } else {
-            std::cout << "PNG berhasil disave" << std::endl;
+            cout << "======================================" << endl;
+            cout << endl;
+            cout << "PNG berhasil disave" <<  endl;
+            cout << endl;
+
+            cout << "======================================" << endl;
         }
     } else if (format == "jpg") {
         if (!stbi_write_jpg((filename + ".jpg").c_str(), width, height, channels, data, 50)) {
-            std::cout << "Gagal save JPG" << std::endl;
+             cout << "Gagal save JPG" <<  endl;
         } else {
-            std::cout << "JPG berhasil disave" << std::endl;
+            cout << "======================================" << endl;
+            cout << endl;
+             cout << "JPG berhasil disave" <<  endl;
+             cout << endl;
+
         }
     } else if (format == "jpeg") {
         if (!stbi_write_jpg((filename + ".jpeg").c_str(), width, height, channels, data, 50)) {
-            std::cout << "Gagal save JPEG" << std::endl;
+             cout << "Gagal save JPEG" <<  endl;
         } else {
-            std::cout << "JPEG berhasil disave" << std::endl;
+            cout << "======================================" << endl;
+            cout << endl;
+             cout << "JPEG berhasil disave" <<  endl;
+             cout << endl;
+
         }
     } 
 
@@ -115,7 +128,7 @@ string getFileExtension(const string& filename) {
 }
 
 double getFileSize(const string& fileName) {
-    std::ifstream file(fileName, std::ios::binary | std::ios::ate);
+     ifstream file(fileName,  ios::binary |  ios::ate);
     return file.tellg()/1024;
 }
 
