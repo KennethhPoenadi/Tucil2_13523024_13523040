@@ -87,13 +87,13 @@ int main() {
         cout << "Masukkan target kompresi (0.01 - 1): ";
         cin >> targetCompressionRate;
 
-        targetCompressionRate * 100;
+        targetCompressionRate *= 100;
         
         int errorMethod;
         errorMethod = 2;
         
         if (errorMethod == 2) {
-            useSSIM = true;
+            useMPD = true;
         } else {
             useVariance = true;
         }
