@@ -92,7 +92,7 @@ QuadTree* QuadTree::buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y
             }
         }
 
-        double ssim = calculateSSIM_RGBA(mat, &avgBlock, x, y, sizeX, sizeY);
+        double ssim = calculateSSIM_RGB(mat, &avgBlock, x, y, sizeX, sizeY);
         error = 1.0 - ssim;
 
     }

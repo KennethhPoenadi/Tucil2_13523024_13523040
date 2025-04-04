@@ -276,10 +276,10 @@ double calculateSSIM(const vector<vector<Pixel>>* original, const vector<vector<
     return max(0.0, min(1.0, ssim));
 }
 
-double calculateSSIM_RGBA(const vector<vector<Pixel>>* original, const vector<vector<Pixel>>* compressed, int x, int y, int sizeX, int sizeY) {
+double calculateSSIM_RGB(const vector<vector<Pixel>>* original, const vector<vector<Pixel>>* compressed, int x, int y, int sizeX, int sizeY) {
     // Modified weights for RGBA, accounting for alpha
-    const double wR = 0.2125, wG = 0.7154, wB = 0.0721, wA = 0.1;
-    double totalWeight = wR + wG + wB + wA;
+    const double wR = 0.2125, wG = 0.7154, wB = 0.0721;
+    double totalWeight = wR + wG + wB ;
     
     if (x < 0 || y < 0 || sizeX <= 0 || sizeY <= 0 ||
         y >= static_cast<int>(original->size()) || y >= static_cast<int>(compressed->size())) {
@@ -289,9 +289,8 @@ double calculateSSIM_RGBA(const vector<vector<Pixel>>* original, const vector<ve
     double SSIM_R = calculateSSIM(original, compressed, x, y, sizeX, sizeY, 0);
     double SSIM_G = calculateSSIM(original, compressed, x, y, sizeX, sizeY, 1);
     double SSIM_B = calculateSSIM(original, compressed, x, y, sizeX, sizeY, 2);
-    double SSIM_A = calculateSSIM(original, compressed, x, y, sizeX, sizeY, 3);
     
-    return (wR * SSIM_R + wG * SSIM_G + wB * SSIM_B + wA * SSIM_A) / totalWeight;
+    return (wR * SSIM_R + wG * SSIM_G + wB * SSIM_B) / totalWeight;
 }
 
 /* SSIM (BONUS) */
