@@ -166,7 +166,7 @@ pair<int, double> Kompresi::findOptimalParameters(
                     minSize = blockSize;
                     bestThreshold = threshold;
 
-                    if (difference < 1.5) {
+                    if (difference < 4) {
                         cout << "Telah Ditemukan parameters dengan perbedaan 1.5% of target compression rate." << endl;
                         remove((tempOutputFilename + "." + ext).c_str());
                         delete root;

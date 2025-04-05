@@ -93,7 +93,7 @@ int main() {
         errorMethod = 2;
         
         if (errorMethod == 2) {
-            useMPD = true;
+            useSSIM = true;
         } else {
             useVariance = true;
         }
