@@ -2,6 +2,7 @@
 #include "include/quadtree.hpp" 
 #include "include/utils.hpp" 
 #include "include/bonus.hpp"
+#include "include/gifer.hpp"
 #include <iostream>
 #include <string>
 #include <chrono>
@@ -46,6 +47,10 @@ int main() {
     bool useVariance = false, useMPD = false, useMAD = false, useEntropy = false, useSSIM = false;
     int minX = 1, minY = 1;
     double threshold = 0.0;
+
+    //buat gif nanti
+    char togifornottogif;
+    string gifOutput;
     
     if (compressionChoice == 1) {
         int methodInput;
@@ -70,6 +75,17 @@ int main() {
         cout << "Masukkan path file gambar output: ";
         cin.ignore();
         getline(cin, outputFilename);
+
+        cout << "Apakah anda ingin membuat GIF? (y/n): ";
+        cin >> togifornottogif;
+
+        if (togifornottogif == 'y' || togifornottogif == 'Y') {
+             cout << "Masukkan path file GIF output: ";
+             cin >> gifOutput;
+           
+        } else {
+            cout << "Tidak membuat gif" << endl;
+        }
         
         switch (methodInput) {
             case 1: useVariance = true; break;
@@ -103,6 +119,17 @@ int main() {
         getline(cin, outputFilename);
         cout << "======================================" << endl;
         cout << endl;
+
+        cout << "Apakah anda ingin membuat GIF? (y/n): ";
+        cin >> togifornottogif;
+
+        if (togifornottogif == 'y' || togifornottogif == 'Y') {
+             cout << "Masukkan path file GIF output: ";
+             cin >> gifOutput;
+           
+        } else {
+            cout << "Tidak membuat gif" << endl;
+        }
         
         cout << "\nMencari parameter optimal untuk target kompresi " << targetCompressionRate << "%...\n";
         
@@ -121,6 +148,7 @@ int main() {
         return 1;
     }
     
+    //timer dimulai
     auto start = chrono::high_resolution_clock::now();
     
     const vector<vector<Pixel>>* pixelMatrix = &img.pixels;
@@ -134,8 +162,16 @@ int main() {
     root->reconstructImage(root, reconstructImageMatrix, 0, 0);
     
     string ext = getFileExtension(filename);
-    saveReconstructedImage(outputFilename, reconstructImageMatrix, ext);
+    int maxDepth = QuadTree::depthTree(root);
     
+    saveReconstructedImage(outputFilename, reconstructImageMatrix, ext);
+
+    //kalau buat gif (masuk di timer)
+    if (togifornottogif == 'y' || togifornottogif == 'Y') {
+        gifMaker(img.width, img.height, gifOutput.c_str(), maxDepth, root, reconstructImageMatrix);
+    }
+    
+    //buat timer ms
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::milliseconds>(end-start);
     

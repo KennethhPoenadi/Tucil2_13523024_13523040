@@ -36,6 +36,7 @@ class QuadTree {
         void reconstructImage(QuadTree* node, vector<vector<Pixel>>& pixelMatrix, int x, int y);
         static int depthTree(QuadTree* node, int depth=0);
         static long countNode(QuadTree* node, long nodes=0);
+        void reconstructImageFrame(QuadTree* node, vector<vector<Pixel>>& pixelMatrix, int offsetX, int offsetY, int depth, int maxDepth);
 };
 
 #endif

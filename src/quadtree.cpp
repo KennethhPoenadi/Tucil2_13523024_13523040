@@ -110,6 +110,7 @@ QuadTree* QuadTree::buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y
     int sizeY1 = midY, sizeY2 = sizeY - midY;
     
     QuadTree* node = new QuadTree(mat, x, y, sizeX, sizeY, minX, minY);
+    node->averageColor = getAverageColor(mat, x, y, sizeX, sizeY);
     node->setGambarKiriAtas(buildQuadTree(mat, x, y, sizeX1, sizeY1, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy, useSSIM));
     node->setGambarKananAtas(buildQuadTree(mat, x + sizeX1, y, sizeX2, sizeY1, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy,useSSIM));
     node->setGambarKiriBawah(buildQuadTree(mat, x, y + sizeY1, sizeX1, sizeY2, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy,useSSIM));
@@ -136,19 +137,47 @@ void QuadTree::reconstructImage(QuadTree* node, vector<vector<Pixel>>& pixelMatr
         }
         return;
     }
-    if (node -> getGambarKiriAtas()) {
-        reconstructImage(node -> getGambarKiriAtas(), pixelMatrix, offsetX, offsetY);
-    }
-    if (node -> getGambarKananAtas()) {
-        reconstructImage(node -> getGambarKananAtas(), pixelMatrix, offsetX + node->getSizeX() /2, offsetY);
-    }
-    if (node -> getGambarKiriBawah()) {
-        reconstructImage(node -> getGambarKiriBawah(), pixelMatrix, offsetX, offsetY + node->getSizeY() /2);
-    }
-    if (node -> getGambarKananBawah()) {
-        reconstructImage(node -> getGambarKananBawah(), pixelMatrix, offsetX + node->getSizeX() /2, offsetY + node->getSizeY() /2);
-    }
+     if (node -> getGambarKiriAtas()) {
+         reconstructImage(node -> getGambarKiriAtas(), pixelMatrix, offsetX, offsetY);
+     }
+     if (node -> getGambarKananAtas()) {
+         reconstructImage(node -> getGambarKananAtas(), pixelMatrix, offsetX + node->getSizeX() /2, offsetY);
+     }
+     if (node -> getGambarKiriBawah()) {
+         reconstructImage(node -> getGambarKiriBawah(), pixelMatrix, offsetX, offsetY + node->getSizeY() /2);
+     }
+     if (node -> getGambarKananBawah()) {
+         reconstructImage(node -> getGambarKananBawah(), pixelMatrix, offsetX + node->getSizeX() /2, offsetY + node->getSizeY() /2);
+     }
 }
+
+void QuadTree::reconstructImageFrame(QuadTree* node, vector<vector<Pixel>>& pixelMatrix, int offsetX, int offsetY, int depth, int maxDepth){
+    if(!node) return;
+
+    if (depth < maxDepth) {
+        for (int i = 0; i < node -> getSizeY(); i++) {
+            for (int j = 0; j < node -> getSizeX(); j++) {
+                int imgX = offsetX + j;
+                int imgY = offsetY + i;
+                pixelMatrix[imgY][imgX] = node->averageColor;
+            }
+        }
+     if (node -> getGambarKiriAtas()) {
+         reconstructImageFrame(node -> getGambarKiriAtas(), pixelMatrix, offsetX, offsetY, depth + 1, maxDepth);
+     }
+     if (node -> getGambarKananAtas()) {
+         reconstructImageFrame(node -> getGambarKananAtas(), pixelMatrix, offsetX + node->getSizeX() /2, offsetY, depth + 1, maxDepth);
+     }
+     if (node -> getGambarKiriBawah()) {
+         reconstructImageFrame(node -> getGambarKiriBawah(), pixelMatrix, offsetX, offsetY + node->getSizeY() /2, depth + 1, maxDepth);
+     }
+     if (node -> getGambarKananBawah()) {
+         reconstructImageFrame(node -> getGambarKananBawah(), pixelMatrix, offsetX + node->getSizeX() /2, offsetY + node->getSizeY() /2, depth + 1, maxDepth);
+     }
+    }
+
+}
+
 
 int QuadTree::depthTree(QuadTree* node, int depth) {
     if (!node) return 0;
