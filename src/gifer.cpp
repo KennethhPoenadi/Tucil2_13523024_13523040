@@ -7,6 +7,7 @@
 void gifMaker(int width, int height, const char* gifOutput, int maxDepth, QuadTree* root, std::vector<std::vector<Pixel>>& reconstructImageMatrix) {
     GifWriter writer;
 
+
     if (!GifBegin(&writer, gifOutput, width, height, 10)) {
         std::cerr << "Gagal membuat GIF\n";
         return;

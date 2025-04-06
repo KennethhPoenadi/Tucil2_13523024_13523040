@@ -81,8 +81,10 @@ int main() {
 
         if (togifornottogif == 'y' || togifornottogif == 'Y') {
              cout << "Masukkan path file GIF output: ";
-             cin >> gifOutput;
+             cin.ignore();
+             getline(cin, gifOutput);
            
+           gifOutput += ".gif";
         } else {
             cout << "Tidak membuat gif" << endl;
         }
@@ -126,6 +128,8 @@ int main() {
         if (togifornottogif == 'y' || togifornottogif == 'Y') {
              cout << "Masukkan path file GIF output: ";
              cin >> gifOutput;
+                cin.ignore();
+             getline(cin, gifOutput);
            
         } else {
             cout << "Tidak membuat gif" << endl;
