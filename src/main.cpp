@@ -42,13 +42,18 @@ int main() {
 
     cout << "Pilihan: ";
     cin >> compressionChoice;
+
+    while (compressionChoice < 1 or compressionChoice > 2) {
+        cout << "Input antara 1 - 2, silahkan ulangi input: ";
+        cin >> compressionChoice;
+    }
+    cout << "======================================" << endl;
     
     string outputFilename;
     bool useVariance = false, useMPD = false, useMAD = false, useEntropy = false, useSSIM = false;
     int minX = 1, minY = 1;
     double threshold = 0.0;
 
-    //buat gif nanti
     char togifornottogif;
     string gifOutput;
     
@@ -60,16 +65,32 @@ int main() {
         cout << "======================================" << endl;
         cout << "Pilihan: ";
         cin >> methodInput;
+        while (methodInput < 1 || methodInput > 5) {
+            cout << "Input antara 1 - 5, silahkan ulangi input: ";
+            cin >> methodInput;
+        }
         cout << "======================================" << endl;
 
         
         cout << "Masukkan threshold error: ";
         cin >> threshold;
+        while (threshold <= 0) {
+            cout << "Threshold tidak boleh 0 atau dibawah 0, silahkan ulangi input: ";
+            cin >> threshold;
+        }
         
         cout << "Masukkan minimum block size X: ";
         cin >> minX;
+        while (minX <= 0 || minX >= img.width) {
+            cout << "Minimum block size X tidak boleh 0, dibawah 0, atau lebih besar dari width gambar, silahkan ulangi input: ";
+            cin >> minX;
+        }
         cout << "Masukkan minimum block size Y: ";
         cin >> minY;
+        while (minY <= 0 || minY >= img.height) {
+            cout << "Minimum block size Y tidak boleh 0, dibawah 0, atau lebih besar dari height gambar, silahkan ulangi input: ";
+            cin >> minY;
+        }
         cout << "======================================" << endl;
         
         cout << "Masukkan path file gambar output: ";
@@ -79,13 +100,18 @@ int main() {
         cout << "Apakah anda ingin membuat GIF? (y/n): ";
         cin >> togifornottogif;
 
+        while (togifornottogif != 'n' or togifornottogif == 'N' || togifornottogif == 'y' || togifornottogif == 'Y') {
+            cout << "Pilihannya y, Y, n, N ya!, ulangi: ";
+            cin >> togifornottogif;
+        }
+
         if (togifornottogif == 'y' || togifornottogif == 'Y') {
              cout << "Masukkan path file GIF output: ";
              cin.ignore();
              getline(cin, gifOutput);
            
            gifOutput += ".gif";
-        } else {
+        } else if (togifornottogif == 'n' || togifornottogif == 'N'){
             cout << "Tidak membuat gif" << endl;
         }
         
@@ -147,9 +173,6 @@ int main() {
         cout << "\nParameter optimal ditemukan:\n";
         cout << "- Minimum block size: " << minX << "x" << minY << endl;
         cout << "- Threshold: " << threshold << endl;
-    } else {
-        cout << "Pilihan tidak valid. Program berhenti.\n";
-        return 1;
     }
     
     //timer dimulai

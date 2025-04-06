@@ -277,7 +277,6 @@ double calculateSSIM(const vector<vector<Pixel>>* original, const vector<vector<
 }
 
 double calculateSSIM_RGB(const vector<vector<Pixel>>* original, const vector<vector<Pixel>>* compressed, int x, int y, int sizeX, int sizeY) {
-    // Modified weights for RGBA, accounting for alpha
     const double wR = 0.2125, wG = 0.7154, wB = 0.0721;
     double totalWeight = wR + wG + wB ;
     
