@@ -100,7 +100,7 @@ int main() {
         cout << "Apakah anda ingin membuat GIF? (y/n): ";
         cin >> togifornottogif;
 
-        while (togifornottogif != 'n' or togifornottogif == 'N' || togifornottogif == 'y' || togifornottogif == 'Y') {
+        while (togifornottogif != 'n' || togifornottogif != 'N' || togifornottogif != 'y' || togifornottogif != 'Y') {
             cout << "Pilihannya y, Y, n, N ya!, ulangi: ";
             cin >> togifornottogif;
         }
