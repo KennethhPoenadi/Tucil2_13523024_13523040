@@ -100,11 +100,6 @@ int main() {
         cout << "Apakah anda ingin membuat GIF? (y/n): ";
         cin >> togifornottogif;
 
-        while (togifornottogif != 'n' || togifornottogif != 'N' || togifornottogif != 'y' || togifornottogif != 'Y') {
-            cout << "Pilihannya y, Y, n, N ya!, ulangi: ";
-            cin >> togifornottogif;
-        }
-
         if (togifornottogif == 'y' || togifornottogif == 'Y') {
              cout << "Masukkan path file GIF output: ";
              cin.ignore();
