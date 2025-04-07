@@ -3,6 +3,18 @@
 ## **📌 Deskripsi Singkat**
 Program ini mengimplementasikan algoritma kompresi gambar berbasis struktur **Quadtree**. Citra warna warni direpresentasikan sebagai matriks RGB, kemudian dikompresi dengan cara membagi matriks menjadi semacam quadtree sehingga menjadi kuadran hingga memenuhi ambang batas kedalaman atau warna homogen. Kalian dapat mengatur tingkat persentase kompresi yang kalian inginkan dengan error += 4% dari yang kalian mau! Program ini juga dapat menghasilkan GIF yang dapat memperlihatkan anda bagaimana program ini bekerja dengan quadtree.
 
+Terdapat beberapa perhitungan yang dapat digunakan pada program untuk perhitungan error pada gambar:
+1. Varians: Mengukur seberapa tersebar nilai piksel dari rata-rata warna di blok tertentu.
+2. MAD (Mean Absolute Deviation): Rata-rata dari nilai mutlak selisih setiap piksel terhadap rata-ratanya.
+3. MPD (Max Pixel Difference): Selisih maksimum antara piksel mana pun terhadap rata-rata atau piksel lain.
+4. Entropy: Ukuran ketidakteraturan distribusi warna (informasi). Semakin tinggi entropi, semakin kompleks gambar.
+5. SSIM (Structural Similarity Index Measure): Mengukur kesamaan struktural antara blok asli dan blok hasil kompresi. Nilainya berada antara **0 (berbeda sekali)** hingga **1 (identik secara struktur)**. 
+- **Semakin tinggi SSIM**, berarti blok tersebut **semakin mirip dengan versi aslinya**, sehingga **tidak perlu dibelah lagi**.
+- Dalam implementasi, **blok dibelah** jika nilai SSIM **kurang dari threshold** yang ditentukan, misalnya 0.9.
+
+# *----------------------------------------------------------------*
+
+
 <div align="center">
   
 ![Screenshot 2025-04-06 230240](https://github.com/user-attachments/assets/c7cb6366-5ebf-491c-8a20-8caa701579fb)
@@ -11,7 +23,7 @@ Program ini mengimplementasikan algoritma kompresi gambar berbasis struktur **Qu
 
 </div>
 
-# *-----------------------------------------------------------------------*
+# *----------------------------------------------------------------*
 ## **Gambaran GIF Visualisasi Rekonstruksi Quadtree**
 <div align="center">
 
