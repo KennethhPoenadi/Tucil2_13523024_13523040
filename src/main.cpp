@@ -95,7 +95,6 @@ int main() {
 
         if (togifornottogif == 'y' || togifornottogif == 'Y') {
              cout << "Masukkan path file GIF output: ";
-             cin.ignore();
              getline(cin, gifOutput);
            
            gifOutput += ".gif";
