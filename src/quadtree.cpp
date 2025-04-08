@@ -3,37 +3,33 @@
 #include "include/image.hpp"
 using namespace std;
 
-QuadTree::QuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY)
+QuadTree::QuadTree(const vector<vector<Pixel>>* mat, double x, double y, double sizeX, double sizeY, int minBlockSizeYes)
     : matrix(mat), x(x), y(y), sizeX(sizeX), sizeY(sizeY), 
-      minBlockSizeX(minX), minBlockSizeY(minY),
+      minBlockSize(minBlockSizeYes),
       GambarKiriAtas(nullptr), GambarKananAtas(nullptr), GambarKiriBawah(nullptr), GambarKananBawah(nullptr) {}
 
 const vector<vector<Pixel>>* QuadTree::getMatrix() const {
     return matrix;
 }
 
-int QuadTree::getX() const { 
+double QuadTree::getX() const { 
     return x;
 }
 
-int QuadTree::getY() const {
+double QuadTree::getY() const {
     return y;
 }
 
-int QuadTree::getSizeX() const {
+double QuadTree::getSizeX() const {
     return sizeX;
 }
 
-int QuadTree::getSizeY() const {
+double QuadTree::getSizeY() const {
     return sizeY;
 }
 
-int QuadTree::getMinBlockSizeX() const {
-    return minBlockSizeX;
-}
-
-int QuadTree::getMinBlockSizeY() const {
-    return minBlockSizeY;
+double QuadTree::getMinBlockSize() const {
+    return minBlockSize;
 }
 
 QuadTree* QuadTree::getGambarKiriAtas() const { 
@@ -68,7 +64,7 @@ void QuadTree::setGambarKananBawah(QuadTree* node) {
     GambarKananBawah = node;
 }
 
-QuadTree* QuadTree::buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y, int sizeX, int sizeY, int minX, int minY, double threshold, bool useVariance, bool useMPD, bool useMAD, bool useEntropy, bool useSSIM) 
+QuadTree* QuadTree::buildQuadTree(const vector<vector<Pixel>>* mat, double x, double y, double sizeX, double sizeY, double minBlockSize, double threshold, bool useVariance, bool useMPD, bool useMAD, bool useEntropy, bool useSSIM) 
 {
     double error = 0.0;
     
@@ -76,45 +72,58 @@ QuadTree* QuadTree::buildQuadTree(const vector<vector<Pixel>>* mat, int x, int y
         error = calculateRGBAVariance(mat, x, y, sizeX, sizeY);
     } else if (useMPD) {
         error = calculateMPD(mat, x, y, sizeX, sizeY);
-
     } else if (useMAD) {
         error = calculateRGBAMad(mat, x, y, sizeX, sizeY);
-
     } else if (useEntropy) {
         error = calculateRGBAEntropyTotal(mat, x, y, sizeX, sizeY); 
-    } else if (useSSIM) {
-        vector<std::vector<Pixel>> avgBlock(sizeY, vector<Pixel>(sizeX));
-        Pixel avgColor = getAverageColor(mat, x, y, sizeX, sizeY);
+    } else if (useSSIM) {        
+        int startX = static_cast<int>(x);
+        int startY = static_cast<int>(y);
+        int blockSizeX = static_cast<int>(sizeX);
+        int blockSizeY = static_cast<int>(sizeY);
+        
+        vector<vector<Pixel>> avgBlock(blockSizeY, vector<Pixel>(blockSizeX));
+        
+        Pixel avgColor = getAverageColor(mat, startX, startY, blockSizeX, blockSizeY);
                 
-        for (int j = 0; j < sizeY; j++) {
-            for (int i = 0; i < sizeX; i++) {
+        for (int j = 0; j < blockSizeY; j++) {
+            for (int i = 0; i < blockSizeX; i++) {
                 avgBlock[j][i] = avgColor;
             }
         }
 
-        double ssim = calculateSSIM_RGB(mat, &avgBlock, x, y, sizeX, sizeY);
-        error = 1.0 - ssim;
 
+        double ssim = calculateSSIM_RGB(mat, &avgBlock, startX, startY, blockSizeX, blockSizeY);
+        error = 1.0 - ssim; 
     }
+
+    int block_area = static_cast<int>(sizeX * sizeY);
+    int min_block_size = static_cast<int>(minBlockSize);
     
-    //berentikan pembagian jika ukuran blok sudah mencapai minimum atau error kurang dari atau sama dengan threshold
-    if (sizeX <= minX || sizeY <= minY || error < threshold) {
-        QuadTree* leaf = new QuadTree(mat, x, y, sizeX, sizeY, minX, minY);
-        leaf->averageColor = getAverageColor(mat, x, y, sizeX, sizeY);
+    if ((block_area / 2) < min_block_size || block_area < min_block_size || error <= threshold) {
+        QuadTree* leaf = new QuadTree(mat, x, y, sizeX, sizeY, minBlockSize);
+        leaf->averageColor = getAverageColor(mat, static_cast<int>(x), static_cast<int>(y), 
+                                            static_cast<int>(sizeX), static_cast<int>(sizeY));
         return leaf;
     }
     
-    int midX = sizeX / 2;
-    int midY = sizeY / 2;
-    int sizeX1 = midX, sizeX2 = sizeX - midX;
-    int sizeY1 = midY, sizeY2 = sizeY - midY;
+    double midX = sizeX / 2;
+    double midY = sizeY / 2;
+    double sizeX1 = midX, sizeX2 = sizeX - midX;
+    double sizeY1 = midY, sizeY2 = sizeY - midY;
     
-    QuadTree* node = new QuadTree(mat, x, y, sizeX, sizeY, minX, minY);
-    node->averageColor = getAverageColor(mat, x, y, sizeX, sizeY);
-    node->setGambarKiriAtas(buildQuadTree(mat, x, y, sizeX1, sizeY1, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy, useSSIM));
-    node->setGambarKananAtas(buildQuadTree(mat, x + sizeX1, y, sizeX2, sizeY1, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy,useSSIM));
-    node->setGambarKiriBawah(buildQuadTree(mat, x, y + sizeY1, sizeX1, sizeY2, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy,useSSIM));
-    node->setGambarKananBawah(buildQuadTree(mat, x + sizeX1, y + sizeY1, sizeX2, sizeY2, minX, minY, threshold, useVariance, useMPD, useMAD, useEntropy,useSSIM));
+    QuadTree* node = new QuadTree(mat, x, y, sizeX, sizeY, minBlockSize);
+    node->averageColor = getAverageColor(mat, static_cast<int>(x), static_cast<int>(y), 
+                                        static_cast<int>(sizeX), static_cast<int>(sizeY));
+    
+    node->setGambarKiriAtas(buildQuadTree(mat, x, y, sizeX1, sizeY1, minBlockSize, threshold, 
+                                        useVariance, useMPD, useMAD, useEntropy, useSSIM));
+    node->setGambarKananAtas(buildQuadTree(mat, x + sizeX1, y, sizeX2, sizeY1, minBlockSize, threshold, 
+                                         useVariance, useMPD, useMAD, useEntropy, useSSIM));
+    node->setGambarKiriBawah(buildQuadTree(mat, x, y + sizeY1, sizeX1, sizeY2, minBlockSize, threshold, 
+                                         useVariance, useMPD, useMAD, useEntropy, useSSIM));
+    node->setGambarKananBawah(buildQuadTree(mat, x + sizeX1, y + sizeY1, sizeX2, sizeY2, minBlockSize, threshold, 
+                                          useVariance, useMPD, useMAD, useEntropy, useSSIM));
     
     return node;
 }
@@ -124,14 +133,14 @@ bool QuadTree::isLeaf(QuadTree* node) {
     else return false;
 }
 
-void QuadTree::reconstructImage(QuadTree* node, vector<vector<Pixel>>& pixelMatrix, int offsetX, int offsetY){
+void QuadTree::reconstructImage(QuadTree* node, vector<vector<Pixel>>& pixelMatrix, double offsetX, double offsetY){
     if(!node) return;
 
     if (isLeaf(node)) {
         for (int i = 0; i < node -> getSizeY(); i++) {
             for (int j = 0; j < node -> getSizeX(); j++) {
-                int imgX = offsetX + j;
-                int imgY = offsetY + i;
+                double imgX = offsetX + j;
+                double imgY = offsetY + i;
                 pixelMatrix[imgY][imgX] = node->averageColor;
             }
         }
@@ -151,14 +160,14 @@ void QuadTree::reconstructImage(QuadTree* node, vector<vector<Pixel>>& pixelMatr
      }
 }
 
-void QuadTree::reconstructImageFrame(QuadTree* node, vector<vector<Pixel>>& pixelMatrix, int offsetX, int offsetY, int depth, int maxDepth){
+void QuadTree::reconstructImageFrame(QuadTree* node, vector<vector<Pixel>>& pixelMatrix, double offsetX, double offsetY, int depth, int maxDepth){
     if(!node) return;
 
     if (depth < maxDepth) {
         for (int i = 0; i < node -> getSizeY(); i++) {
             for (int j = 0; j < node -> getSizeX(); j++) {
-                int imgX = offsetX + j;
-                int imgY = offsetY + i;
+                double imgX = offsetX + j;
+                double imgY = offsetY + i;
                 pixelMatrix[imgY][imgX] = node->averageColor;
             }
         }

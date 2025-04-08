@@ -51,9 +51,8 @@ int main() {
     
     string outputFilename;
     bool useVariance = false, useMPD = false, useMAD = false, useEntropy = false, useSSIM = false;
-    int minX = 1, minY = 1;
-    double threshold = 0.0;
-
+    double min;
+    double threshold;
     char togifornottogif;
     string gifOutput;
     
@@ -79,17 +78,11 @@ int main() {
             cin >> threshold;
         }
         
-        cout << "Masukkan minimum block size X: ";
-        cin >> minX;
-        while (minX <= 0 || minX >= img.width) {
-            cout << "Minimum block size X tidak boleh 0, dibawah 0, atau lebih besar dari width gambar, silahkan ulangi input: ";
-            cin >> minX;
-        }
-        cout << "Masukkan minimum block size Y: ";
-        cin >> minY;
-        while (minY <= 0 || minY >= img.height) {
-            cout << "Minimum block size Y tidak boleh 0, dibawah 0, atau lebih besar dari height gambar, silahkan ulangi input: ";
-            cin >> minY;
+        cout << "Masukkan minimum block size: ";
+        cin >> min;
+        while (min <4 || min > (img.height * img.width)) {
+            cout << "Ulangi input, luas blok minimum tidak boleh kurang dari 4 (minimal 2 x 2) atau melebihi luas gambar: ";
+            cin >> min;
         }
         cout << "======================================" << endl;
         
@@ -161,12 +154,11 @@ int main() {
         auto optimalParams = Kompresi::findOptimalParameters(
             img, targetCompressionRate, filename, outputFilename, useSSIM
         );
-        
-        minX = minY = optimalParams.first;
+        min = optimalParams.first;   
         threshold = optimalParams.second;
         
         cout << "\nParameter optimal ditemukan:\n";
-        cout << "- Minimum block size: " << minX << "x" << minY << endl;
+        cout << "- Block size: " << min << endl;
         cout << "- Threshold: " << threshold << endl;
     }
     
@@ -176,7 +168,7 @@ int main() {
     const vector<vector<Pixel>>* pixelMatrix = &img.pixels;
     QuadTree* root = QuadTree::buildQuadTree(
         pixelMatrix, 0, 0, img.width, img.height, 
-        minX, minY, threshold, 
+        min, threshold, 
         useVariance, useMPD, useMAD, useEntropy, useSSIM
     );
     
