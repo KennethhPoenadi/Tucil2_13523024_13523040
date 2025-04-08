@@ -95,6 +95,7 @@ int main() {
 
         if (togifornottogif == 'y' || togifornottogif == 'Y') {
              cout << "Masukkan path file GIF output: ";
+             cin.ignore();
              getline(cin, gifOutput);
            
            gifOutput += ".gif";
@@ -120,14 +121,7 @@ int main() {
 
         targetCompressionRate *= 100;
         
-        int errorMethod;
-        errorMethod = 2;
-        
-        if (errorMethod == 2) {
-            useSSIM = true;
-        } else {
-            useVariance = true;
-        }
+        useSSIM = true;
         
         cout << "Masukkan nama file gambar output: ";
         cin.ignore();
@@ -140,11 +134,11 @@ int main() {
 
         if (togifornottogif == 'y' || togifornottogif == 'Y') {
              cout << "Masukkan path file GIF output: ";
-             cin >> gifOutput;
-                cin.ignore();
+             cin.ignore();
              getline(cin, gifOutput);
            
-        } else {
+           gifOutput += ".gif";
+        } else if (togifornottogif == 'n' || togifornottogif == 'N'){
             cout << "Tidak membuat gif" << endl;
         }
         
