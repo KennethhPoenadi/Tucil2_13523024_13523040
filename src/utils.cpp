@@ -232,7 +232,6 @@ const double C2 = (0.03 * 255) * (0.03 * 255);
 
 double calculateCovariance(const vector<vector<Pixel>>* matrix1, const vector<vector<Pixel>>* matrix2, 
                           int x, int y, int sizeX, int sizeY, int colorChannel) {
-    // Make sure we're working with integers for array indices
     double mean1 = calculateMean(matrix1, x, y, sizeX, sizeY, colorChannel);
     double mean2 = calculateMean(matrix2, x, y, sizeX, sizeY, colorChannel);
     double sum = 0.0;
@@ -242,16 +241,16 @@ double calculateCovariance(const vector<vector<Pixel>>* matrix1, const vector<ve
         for (int i = x; i < x + sizeX && i < static_cast<int>((*matrix1)[j].size()) && i < static_cast<int>((*matrix2)[j].size()); i++) {
             double pixelValue1, pixelValue2;
             
-            if (colorChannel == 0) { // Red
+            if (colorChannel == 0) {
                 pixelValue1 = static_cast<double>((*matrix1)[j][i].r);
                 pixelValue2 = static_cast<double>((*matrix2)[j][i].r);
-            } else if (colorChannel == 1) { // Green
+            } else if (colorChannel == 1) {
                 pixelValue1 = static_cast<double>((*matrix1)[j][i].g);
                 pixelValue2 = static_cast<double>((*matrix2)[j][i].g);
-            } else if (colorChannel == 2) { // Blue
+            } else if (colorChannel == 2) { 
                 pixelValue1 = static_cast<double>((*matrix1)[j][i].b);
                 pixelValue2 = static_cast<double>((*matrix2)[j][i].b);
-            } else { // Alpha
+            } else {
                 pixelValue1 = static_cast<double>((*matrix1)[j][i].a);
                 pixelValue2 = static_cast<double>((*matrix2)[j][i].a);
             }

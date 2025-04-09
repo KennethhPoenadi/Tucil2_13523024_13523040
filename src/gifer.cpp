@@ -28,7 +28,7 @@ void gifMaker(int width, int height, const char* gifOutput, int maxDepth, QuadTr
             }
         }
 
-        GifWriteFrame(&writer, frameData.data(), width, height, 50);
+        GifWriteFrame(&writer, frameData.data(), width, height, 100);
     }
 
     GifEnd(&writer);

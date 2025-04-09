@@ -24,8 +24,15 @@ Image loadImage(const string& filename) {
         for (int x = 0; x < img.width; ++x) {
             int index = (y * img.width + x) * img.channels;
             Pixel& p = img.pixels[y][x];
+
             
-            if (img.channels == 3) {  
+            if (img.channels == 1){
+                p.r = data[index];
+                p.g = data[index];
+                p.b = data[index];
+                p.a = 255;
+            }
+            else if(img.channels == 3) {  
                 p.r = data[index];
                 p.g = data[index + 1];
                 p.b = data[index + 2];
@@ -57,17 +64,29 @@ void saveReconstructedImage(const  string &filename, const  vector< vector<Pixel
     int width = image[0].size();
 
     bool isGrayscale = true;
-    for (int y = 0; y < height && isGrayscale; ++y) {
+    bool Alpha = false;
+    for (int y = 0; y < height && (isGrayscale || !Alpha); ++y) {
         for (int x = 0; x < width; ++x) {
             const Pixel& p = image[y][x];
             if (p.r != p.g || p.g != p.b) {
                 isGrayscale = false;
                 break;
             }
+            if (p.a != 255) {
+                Alpha = true;
+            }
         }
     }
 
-    int channels = isGrayscale ? 1 : 3;
+    bool isJPEG = (format == "jpg" || format == "jpeg");
+    int channels;
+
+    if (isJPEG) {
+        channels = 3;
+    } else {
+        channels = Alpha ? 4 : (isGrayscale ? 1 : 3);
+    }
+
     unsigned char* data = new unsigned char[width * height * channels];
 
     for (int y = 0; y < height; ++y) {
@@ -75,12 +94,28 @@ void saveReconstructedImage(const  string &filename, const  vector< vector<Pixel
             const Pixel& p = image[y][x];
             int index = (y * width + x) * channels;
 
-            if (isGrayscale) {
+            if (isJPEG ){
+                if (isGrayscale) {
+                    data[index] = p.r;
+                    data[index + 1] = p.g;
+                    data[index + 2] = p.b;
+                } else {
+                    data[index] = p.r;
+                    data[index + 1] = p.g;
+                    data[index + 2] = p.b;
+                }
+            }
+            else if (isGrayscale) {
                 data[index] = p.r;
+            } else if (!Alpha) {
+                data[index] = p.r;
+                data[index + 1] = p.g;
+                data[index + 2] = p.b;
             } else {
                 data[index] = p.r;
                 data[index + 1] = p.g;
                 data[index + 2] = p.b;
+                data[index + 3] = p.a;
             }
         }
     }
