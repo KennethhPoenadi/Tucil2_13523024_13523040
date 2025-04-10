@@ -10,7 +10,11 @@
 using namespace std;
 
 int main() {
+
+    //buat waktu
     chrono::high_resolution_clock::time_point start;
+
+    //input file
     string filename;
     cout << "======================================" << endl;
     cout << "WELCOME TO COMPRESS QUADTREE TERGACOR!" << endl;
@@ -50,6 +54,7 @@ int main() {
     char togifornottogif;
     string gifOutput;
     
+    //jika targetCompressionRate 0, maka user input threshold dan min block size
     if (targetCompressionRate == 0) {
         int methodInput;
         cout << "======================================" << endl;
@@ -95,6 +100,7 @@ int main() {
         } else if (togifornottogif == 'n' || togifornottogif == 'N'){
             cout << "Tidak membuat gif" << endl;
         }
+        //waktu dimulai
 
         start = chrono::high_resolution_clock::now();
         
@@ -109,7 +115,7 @@ int main() {
                 useVariance = true; 
                 break;
         }
-    } else {
+    } else { //jika targetCompressionRate 1, maka masuk ke alur target %
         targetCompressionRate *= 100;
         
         useSSIM = true;
@@ -135,6 +141,7 @@ int main() {
         
         cout << "\nMencari parameter optimal untuk target kompresi " << targetCompressionRate << "%...\n";
 
+        //waktu dimulai
         start = chrono::high_resolution_clock::now();
         
         auto optimalParams = Kompresi::findOptimalParameters(
@@ -156,6 +163,7 @@ int main() {
         useVariance, useMPD, useMAD, useEntropy, useSSIM
     );
     
+    //untuk menyimpan hasil rekonstruksi
     vector<vector<Pixel>> reconstructImageMatrix(img.height, vector<Pixel>(img.width));
     root->reconstructImage(root, reconstructImageMatrix, 0, 0);
     
@@ -172,6 +180,8 @@ int main() {
     //buat timer ms
     auto end = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::milliseconds>(end-start);
+
+    //output terminal
     
     double outputFileSize = getFileSize(outputFilename + "." + ext);
     
