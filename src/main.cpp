@@ -33,21 +33,14 @@ int main() {
     cout << "       Dimensi Gambar: " << img.width << " x " << img.height << "" << endl;
     cout << "======================================" << endl;
 
+    double targetCompressionRate;
+    cout << "Masukkan target kompresi (0.01 - 1): ";
+    cin >> targetCompressionRate;
     
-    int compressionChoice;
-    cout << "Silahkan pilih metode kompresi:" << endl;
-    cout << "1: Manual (pilih metode error dan threshold)" << endl;
-    cout << "2: Otomatis (berdasarkan target persentase kompresi)\n";
-    cout << "======================================" << endl;
-
-    cout << "Pilihan: ";
-    cin >> compressionChoice;
-
-    while (compressionChoice < 1 or compressionChoice > 2) {
-        cout << "Input antara 1 - 2, silahkan ulangi input: ";
-        cin >> compressionChoice;
+    while (targetCompressionRate < 0 || targetCompressionRate > 1) {
+        cout << "Target kompresi harus antara 0-1, silahkan ulangi input: ";
+        cin >> targetCompressionRate;
     }
-    cout << "======================================" << endl;
     
     string outputFilename;
     bool useVariance = false, useMPD = false, useMAD = false, useEntropy = false, useSSIM = false;
@@ -56,7 +49,7 @@ int main() {
     char togifornottogif;
     string gifOutput;
     
-    if (compressionChoice == 1) {
+    if (targetCompressionRate == 0) {
         int methodInput;
         cout << "======================================" << endl;
         cout << "Pilih metode error:" << endl;
@@ -70,7 +63,6 @@ int main() {
         }
         cout << "======================================" << endl;
 
-        
         cout << "Masukkan threshold error: ";
         cin >> threshold;
         while (threshold <= 0) {
@@ -80,7 +72,7 @@ int main() {
         
         cout << "Masukkan minimum block size: ";
         cin >> min;
-        while (min <4 || min > (img.height * img.width)) {
+        while (min < 4 || min > (img.height * img.width)) {
             cout << "Ulangi input, luas blok minimum tidak boleh kurang dari 4 (minimal 2 x 2) atau melebihi luas gambar: ";
             cin >> min;
         }
@@ -94,11 +86,11 @@ int main() {
         cin >> togifornottogif;
 
         if (togifornottogif == 'y' || togifornottogif == 'Y') {
-             cout << "Masukkan path file GIF output: ";
-             cin.ignore();
-             getline(cin, gifOutput);
-           
-           gifOutput += ".gif";
+            cout << "Masukkan path file GIF output: ";
+            cin.ignore();
+            getline(cin, gifOutput);
+            
+            gifOutput += ".gif";
         } else if (togifornottogif == 'n' || togifornottogif == 'N'){
             cout << "Tidak membuat gif" << endl;
         }
@@ -114,11 +106,7 @@ int main() {
                 useVariance = true; 
                 break;
         }
-    } else if (compressionChoice == 2) {
-        double targetCompressionRate;
-        cout << "Masukkan target kompresi (0.01 - 1): ";
-        cin >> targetCompressionRate;
-
+    } else {
         targetCompressionRate *= 100;
         
         useSSIM = true;

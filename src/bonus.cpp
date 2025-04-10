@@ -34,7 +34,6 @@ double Kompresi::testCompression(
     double outputFileSize = getFileSize(tempOutputFilename + "." + ext);
     double compressionRate = calculateCompression(inputFileSize, outputFileSize);
 
-    // Clean up
     remove((tempOutputFilename + "." + ext).c_str());
     delete root;
 
@@ -165,7 +164,7 @@ pair<double, double> Kompresi::findOptimalParameters(
                 
                 // Jika hasil sudah cukup dekat dengan target, selesai
                 if (difference < 5.0) {
-                    cout << "  Found very good result (< 5% difference)" << endl;
+                    cout << "  Didapatkan yang percentagenya (< 5% difference)" << endl;
                     return make_pair(minBlockSize, bestThreshold);
                 }
             }
@@ -180,7 +179,7 @@ pair<double, double> Kompresi::findOptimalParameters(
         }
     }
 
-    cout << "Best approximation found: " << closestCompressionRate 
+    cout << "Aproksimasi Terbaik: " << closestCompressionRate 
          << "% (difference: " << minDifference << "%)" << endl;
 
     return make_pair(minBlockSize, bestThreshold);
