@@ -47,16 +47,13 @@ pair<double, double> Kompresi::findOptimalParameters(
     const string& outputBase, 
     bool useSSIM
 ) {
-    //ambil ukuran file input buat hitung compression rate nanti
     double inputFileSize = getFileSize(filename);
 
-    //set nilai default
     double minBlockSize = 4.0;
     double bestThreshold = 0.0;
     double closestCompressionRate = 0.0;
-    double minDifference = 100.0; // Biar ada angka pembanding awal
+    double minDifference = 100.0;
 
-    //cari ukuran blok max yang masih pangkat 2 dari ukuran gambar paling kecil
     int minDimension = min(img.width, img.height);
     double maxBlockSize = 1.0;
     while (maxBlockSize * 8 <= minDimension) {
@@ -71,16 +68,13 @@ pair<double, double> Kompresi::findOptimalParameters(
     };
     vector<CacheEntry> cache;
 
-    //loop dari ukuran blok paling gede ke paling kecil (dibagi 8 tiap iterasi)
+    //loop dari ukuran blok paling gede ke paling kecil (dibagi 44 tiap iterasi)
     for (double blockSize = maxBlockSize; blockSize >= 4.0; blockSize /= 4) {
         cout << "Block size: " << blockSize << endl;
         
-        //set range threshold awal, beda kalau pake SSIM
-        //diubah sesuai permintaan, mulai dari 0.1
-        double startThreshold = useSSIM ? 0.1 : 5.0;
-        double endThreshold = useSSIM ? 0.9 : 50.0;
+        double startThreshold =  0.1;
+        double endThreshold = 0.9 ;
 
-        // Test threshold awal
         double compressionRate = testCompression(img, blockSize, startThreshold, 
                                               inputFileSize, filename, outputBase, useSSIM);
         cache.push_back({blockSize, startThreshold, compressionRate});
@@ -88,7 +82,7 @@ pair<double, double> Kompresi::findOptimalParameters(
         cout << " Threshold: " << startThreshold 
              << ", Compression: " << compressionRate << "%" << endl;
         
-        // Jika hasil jauh dari target (lebih dari 10%), skip block size ini
+        //jika hasil jauh dari target (lebih dari 10%), skip block size ini
         if (abs(compressionRate - targetCompressionRate) > 10.0) {
             cout << "  Skip. Masi Jauh dari target" << endl;
             continue;
@@ -102,7 +96,6 @@ pair<double, double> Kompresi::findOptimalParameters(
             bestThreshold = startThreshold;
         }
         
-        // Test threshold akhir
         double endCompressionRate = testCompression(img, blockSize, endThreshold, 
                                                 inputFileSize, filename, outputBase, useSSIM);
         cache.push_back({blockSize, endThreshold, endCompressionRate});
@@ -128,7 +121,6 @@ pair<double, double> Kompresi::findOptimalParameters(
         }
         
         if (!shouldSearch) {
-            // Jika tidak perlu search, periksa apakah salah satu hasil sudah cukup baik
             if (minDifference < 5.0) {
                 cout << "  Dapat yang toleransinya <= 5%" << endl;
                 return make_pair(minBlockSize, bestThreshold);
@@ -136,10 +128,8 @@ pair<double, double> Kompresi::findOptimalParameters(
             continue;
         }
         
-        // Lakukan pencarian dengan step size 0.1 (atau 5.0 untuk non-SSIM)
-        double step = useSSIM ? 0.1 : 5.0;
+        double step = 0.1;
         
-        // Mulai dari threshold yang lebih dekat ke target
         double currentThreshold = startThreshold;
         if (abs(endCompressionRate - targetCompressionRate) < abs(compressionRate - targetCompressionRate)) {
             currentThreshold = endThreshold - step;
@@ -162,14 +152,13 @@ pair<double, double> Kompresi::findOptimalParameters(
                 minBlockSize = blockSize;
                 bestThreshold = currentThreshold;
                 
-                // Jika hasil sudah cukup dekat dengan target, selesai
                 if (difference < 5.0) {
                     cout << "  Didapatkan yang percentagenya (< 5% difference)" << endl;
                     return make_pair(minBlockSize, bestThreshold);
                 }
             }
             
-            // Tentukan arah pencarian berikutnya
+            //nentuin arah pencarian berikutnya
             if ((useSSIM && currentCompressionRate < targetCompressionRate) || 
                 (!useSSIM && currentCompressionRate > targetCompressionRate)) {
                 currentThreshold += step;
