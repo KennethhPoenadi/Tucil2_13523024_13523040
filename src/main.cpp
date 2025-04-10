@@ -10,6 +10,7 @@
 using namespace std;
 
 int main() {
+    chrono::high_resolution_clock::time_point start;
     string filename;
     cout << "======================================" << endl;
     cout << "WELCOME TO COMPRESS QUADTREE TERGACOR!" << endl;
@@ -94,6 +95,8 @@ int main() {
         } else if (togifornottogif == 'n' || togifornottogif == 'N'){
             cout << "Tidak membuat gif" << endl;
         }
+
+        start = chrono::high_resolution_clock::now();
         
         switch (methodInput) {
             case 1: useVariance = true; break;
@@ -131,6 +134,8 @@ int main() {
         }
         
         cout << "\nMencari parameter optimal untuk target kompresi " << targetCompressionRate << "%...\n";
+
+        start = chrono::high_resolution_clock::now();
         
         auto optimalParams = Kompresi::findOptimalParameters(
             img, targetCompressionRate, filename, outputFilename, useSSIM
@@ -143,8 +148,6 @@ int main() {
         cout << "- Threshold: " << threshold << endl;
     }
     
-    //timer dimulai
-    auto start = chrono::high_resolution_clock::now();
     
     const vector<vector<Pixel>>* pixelMatrix = &img.pixels;
     QuadTree* root = QuadTree::buildQuadTree(
